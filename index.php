@@ -128,6 +128,14 @@
                                                 </td>
                                             </tr>
                                             <tr>
+                                                <td class="menuh" nowrap="1">Raids...</td>
+                                            </tr>
+                                            <tr>
+                                                <td  class="menu_item">
+                                                    <li><a href="?a=raid_targets">Raid Targets</a> </li>
+                                                </td>
+                                            </tr>
+                                            <tr>
                                                 <td class="menuh" nowrap="1">Items...</td>
                                             </tr>
                                             <tr>

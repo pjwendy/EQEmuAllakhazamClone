@@ -31,6 +31,8 @@ if ($route == "spells") {
     require_once('pages/zones/zones_by_level.php');
 } else if ($route == "zone") {
     require_once('pages/zones/zone.php');
+} else if ($route == "raid_targets") {
+    require_once('pages/raids/raid_targets.php');
 } else if ($route == "npc") {
     require_once('pages/npcs/npc.php');
 } else if ($route == "recipe") {
