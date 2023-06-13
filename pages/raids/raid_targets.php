@@ -21,7 +21,7 @@ $levels[12] = "Stage 12 (~MPG Trials; Tacvi)";
 $levels[13] = "Stage 13 (~Anguish; Demiplane Tier 1)";
 $levels[14] = "Stage 14 (~Demiplane Tier 2; Theater of Blood)";
 
-$query = "SELECT raid_targets.`level`, raid_targets.killed, npc_types.Name, npc_types.id FROM raid_targets INNER JOIN npc_types ON npc_types.id=raid_targets.npc ORDER BY LEVEL ASC ,killed DESC"; 
+$query = "SELECT raid_targets.`level`, raid_targets.killed, raid_targets.killimage, npc_types.Name, npc_types.id FROM raid_targets INNER JOIN npc_types ON npc_types.id=raid_targets.npc ORDER BY LEVEL ASC ,killed DESC"; 
 $result = db_mysql_query($query) or message_die('raid_targets.php', 'MYSQL_QUERY', $query, mysqli_error());
 $cpt = 0;
 $targets = array();
@@ -30,6 +30,7 @@ while ($res = mysqli_fetch_array($result)) {
     $targets[$cpt]["killed"] = $res["killed"];
     $targets[$cpt]["name"] = $res["Name"];
     $targets[$cpt]["id"] = $res["id"];
+    $targets[$cpt]["killimage"] = $res["killimage"];
     $cpt++;
 }
 
@@ -47,8 +48,12 @@ for ($i = 0; $i < sizeof($levels); $i++) {
         if (strcmp(strval($i),strval($targets[$j]["level"]))==0) {
             
             $killed=" ";
-            if (strcmp(strval($targets[$j]["killed"]),"1") == 0)
-                $killed = "*";
+            if (strcmp(strval($targets[$j]["killed"]),"1") == 0) {
+                if ($targets[$j]["killimage"] === NULL) 
+                    $killed = "*";
+                else
+                    $killed = "<a href=images/kills/" . $targets[$j]["killimage"] . ">*</a>";
+            }
             $name=$targets[$j]["name"];
             $name=str_replace("_"," ",$name);
             $name=str_replace("#","",$name);
