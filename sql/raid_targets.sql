@@ -14,7 +14,6 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-
 -- Dumping database structure for peq2
 CREATE DATABASE IF NOT EXISTS `peq2` /*!40100 DEFAULT CHARACTER SET latin1 */;
 USE `peq2`;
@@ -32,9 +31,10 @@ DELETE FROM `raid_targets`;
 -- Dumping data for table peq2.raid_targets: ~61 rows (approximately)
 INSERT INTO `raid_targets` (`level`, `npc`, `killed`, `killimage`) VALUES
 	(0, 73057, 1, 'Lady_Vox.png'),
-	(1, 89154, 1, 'Trakanon.png'),
+	(0, 32040, 1, 'Lord_Nagafen.png'),
 	(0, 71012, 1, 'The_Spiroc_lord.png'),
 	(0, 64001, 1, 'phinigel_autropos.png'),
+	(1, 89154, 1, 'Trakanon.png'),
 	(1, 117073, 1, 'Kelorek_Dar.png'),
 	(1, 86014, 1, 'Gorenaire.png'),
 	(1, 103056, 1, 'Overking_Bathezid.png'),
@@ -45,6 +45,7 @@ INSERT INTO `raid_targets` (`level`, `npc`, `killed`, `killimage`) VALUES
 	(1, 72003, 1, 'Cazic_Thule.png'),
 	(1, 91093, 1, 'Talendor.png'),
 	(1, 96089, 1, 'Faydedar.png'),
+	(1, 186107, 1, 'Innoruuk.png'),
 	(2, 123115, 0, NULL),
 	(2, 129003, 0, NULL),
 	(2, 113118, 0, NULL),
@@ -72,11 +73,9 @@ INSERT INTO `raid_targets` (`level`, `npc`, `killed`, `killimage`) VALUES
 	(2, 119112, 0, NULL),
 	(2, 120084, 0, NULL),
 	(2, 120005, 1, 'Sontalak.png'),
-	(1, 186107, 1, 'Innoruuk.png'),
 	(3, 154145, 0, NULL),
 	(3, 179180, 0, NULL),
 	(3, 163075, 0, NULL),
-	(0, 32040, 1, 'Lord_Nagafen.png'),
 	(3, 179037, 0, NULL),
 	(3, 179032, 0, NULL),
 	(3, 113457, 0, NULL),
@@ -98,6 +97,7 @@ INSERT INTO `raid_targets` (`level`, `npc`, `killed`, `killimage`) VALUES
 	(3, 124104, 0, NULL),
 	(3, 176002, 0, NULL),
 	(3, 176088, 0, NULL),
+	(3, 124073, 0, NULL),
 	(4, 208074, 0, NULL),
 	(4, 205091, 0, NULL),
 	(4, 206074, 0, NULL),
@@ -117,9 +117,24 @@ INSERT INTO `raid_targets` (`level`, `npc`, `killed`, `killimage`) VALUES
 	(4, 162206, 0, NULL),
 	(4, 162190, 0, NULL),
 	(5, 126373, 0, NULL),
-	(14, 317109, 0, NULL),
-	(3, 124073, 0, NULL);
-
+	(5, 209026, 0, NULL),
+	(5, 200055, 0, NULL),
+	(5, 220006, 0, NULL),
+	(5, 300020, 0, NULL),
+	(5, 223168, 0, NULL),
+	(5, 212025, 0, NULL),
+	(5, 158096, 0, NULL),
+	(5, 158014, 0, NULL),
+	(5, 158010, 0, NULL),
+	(5, 158015, 0, NULL),
+	(5, 158012, 0, NULL),
+	(5, 158013, 0, NULL),
+	(5, 158007, 0, NULL),
+	(5, 158008, 0, NULL),
+	(5, 158016, 0, NULL),
+	(5, 158011, 0, NULL),
+	(5, 158009, 0, NULL),
+	(14, 317109, 0, NULL);
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
