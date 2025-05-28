@@ -19,10 +19,18 @@ $site_title  = 'EQEmu Server AllaClone';
 /**
  * MySQL Config
  */
-$db_host     = "mariadb";
-$db_name     = "peq";
-$db_user     = "root";
-$db_password = "root";
+function env($variable, $default)
+{
+    return getenv($variable) ? getenv($variable) : $default;
+}
+
+/**
+ * Database info
+ */
+$db_host      = env('DB_HOST', 'mariadb');
+$db_user      = env('DB_USER', 'root');
+$db_password  = env('DB_PASSWORD', 'root');
+$db_name      = env('DB_NAME', 'peq');
 
 /**
  * Options
@@ -33,18 +41,18 @@ $hide_navbar     = false;
 $site_logo = ""; /* Where you put your site logo */
 
 $root_url     = 'http://localhost/';
-$includes_url = $root_url . 'includes/';
+$includes_url = '/includes/';
 $includes_dir = getcwd() . "/includes/";
 $eqemu_dir    = "/home/eqemu/server/";
 $quests_dir   = $eqemu_dir . "quests/";
 $quests_datas = "/home/eqemu/server/quests/";
 $maps_dir     = getcwd() . "/maps/";
-$maps_url     = $root_url . "/maps/";
+$maps_url     = "/maps/";
 $npcs_dir     = getcwd() . "/npcs/";
-$npcs_url     = $root_url . "/npcs/";
+$npcs_url     = "/npcs/";
 $icons_dir    = getcwd() . "/images/icons/";
-$icons_url    = $root_url . "/images/icons/";
-$images_url   = $root_url . "/images/";
+$icons_url    = "/images/icons/";
+$images_url   = "/images/";
 
 /* Options */
 
