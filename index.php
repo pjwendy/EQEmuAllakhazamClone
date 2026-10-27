@@ -2,6 +2,9 @@
 
     require_once('includes/constants.php');
     require_once('includes/config.php');
+    // the icons relative to the page: behind the guild's proxy this site is under /items/, where /images/ isn't
+    $icons_url = "images/icons/";
+    $images_url = "images/";
     require_once($includes_dir . 'mysql.php');
     require_once($includes_dir . 'functions.php');
 
