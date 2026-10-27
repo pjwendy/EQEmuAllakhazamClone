@@ -145,7 +145,6 @@
                                             <tr>
                                                 <td  class="menu_item">
                                                     <li><a href="?a=portal&page=reports">Daily Reports</a> </li>
-                                                    <li><a href="?a=portal&page=upgrades">Upgrades</a> </li>
                                                     <li><a href="?a=portal&page=named">Named</a> </li>
                                                     <li><a href="?a=raid_targets">Raid Targets</a> </li>
                                                 </td>
