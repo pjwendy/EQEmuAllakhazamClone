@@ -89,6 +89,10 @@ table.dataTable.display tbody td, table.dataTable.row-border tbody td { border-t
   border: 1px solid var(--line) !important; border-radius: 6px; }
 .dataTables_wrapper .dataTables_paginate .paginate_button.current { border-color: var(--gold) !important; color: var(--gold-2) !important; }
 
+/* the old Zam style clears every .datatable (clear: both): beside the floating left menu that pushed a page's
+   first table down below the whole menu, a gap the menu's height under the title (Characters, Raid Targets) */
+.page-content .datatable, .page-content-ajax .datatable { clear: none !important; }
+
 /* forms */
 input[type=text], input[type=password], input.search, .inputtext, .inputpassword, select, textarea, .search_box {
   background: var(--panel) !important; color: var(--text) !important; border: 1px solid var(--line) !important; border-radius: 8px !important;
