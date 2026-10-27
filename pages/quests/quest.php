@@ -84,7 +84,17 @@ foreach ($quest['steps'] as $st) {
         $kw = array_diff($st['keywords'], array('hail'));
         $text .= $kw ? "when you say <i>" . htmlspecialchars(implode(" / ", $kw)) . "</i>" : "when you hail";
     }
-    $conds = array_filter(array_map(function ($c) { return isset($c['not']['say']) ? "" : quest_condition($c); }, $st['conditions']));
+    // (what the script tests, once each: not the say that picked the branch, the hand-ins' own item lists, or a
+    // flag both wanted and not wanted, which is the else-arms' negations meeting the arms)
+    $conds = array();
+    foreach ($st['conditions'] as $c) {
+        if (isset($c['not']['say']) || isset($c['handin']) || isset($c['not']['handin']) || isset($c['say'])) continue;
+        $conds[quest_condition($c)] = true;
+    }
+    foreach (array_keys($conds) as $c) {
+        if (strpos($c, "not flag ") === 0 && isset($conds["flag " . substr($c, 9)])) unset($conds[$c]);
+    }
+    $conds = array_keys($conds);
     if ($conds) $text .= " <span style='color:var(--muted)'>(if " . implode("; ", $conds) . ")</span>";
     $gives = array();
     foreach ($st['gives']['items'] as $c) $gives[] = implode(" or ", array_map($item, $c));
