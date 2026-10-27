@@ -334,20 +334,22 @@ if ($mode == "tasks") {
 
     if ($display_task_info == TRUE) {
         $ZoneID = get_field_result("zoneidnumber", "SELECT zoneidnumber FROM zone WHERE short_name = '$name'");
+        // (a task's zones are its steps': task_activities.zones, ids separated by | or ,; tasks.startzone is gone)
+        $ZoneID = intval($ZoneID);
         $query = "
-            SELECT
+            SELECT DISTINCT
                 $tasks_table.id,
                 $tasks_table.title,
-                $tasks_table.startzone,
-                $tasks_table.minlevel,
-                $tasks_table.maxlevel,
-                $tasks_table.reward,
-                $tasks_table.rewardid,
-                $tasks_table.rewardmethod
+                $tasks_table.min_level AS minlevel,
+                $tasks_table.max_level AS maxlevel,
+                $tasks_table.reward_text AS reward,
+                $tasks_table.reward_id_list,
+                $tasks_table.reward_method AS rewardmethod
             FROM
                 $tasks_table
+                JOIN task_activities ta ON ta.taskid = $tasks_table.id
             WHERE
-                $tasks_table.startzone = $ZoneID
+                FIND_IN_SET('$ZoneID', REPLACE(ta.zones, '|', ',')) > 0
             ORDER BY
                 $tasks_table.id ASC
         ";
@@ -367,16 +369,17 @@ if ($mode == "tasks") {
             $RowClass = "lr";
             while ($row = mysqli_fetch_array($result)) {
                 $Reward = $row["reward"];
+                $RewardIDs = array_filter(array_map('intval', preg_split('/[|,]/', (string) $row["reward_id_list"])));
                 if ($row["rewardmethod"] == 0) {
-                    if ($row["rewardid"] > 0) {
-                        $ItemID = $row["rewardid"];
+                    if ($RewardIDs) {
+                        $ItemID = reset($RewardIDs);
                         $ItemName = get_field_result("Name", "SELECT Name FROM items WHERE id = $ItemID");
                         $Reward = "<a href=?a=item&id=" . $ItemID . ">" . $ItemName . "</a>";
                     }
                 }
 
                 $print_buffer .= "<tr class='" . $RowClass . "'>
-					<td><a href=task.php?id=" . $row["id"] . ">" . $row["title"] . "</a></td>
+					<td><a href=?a=tasks&id=" . $row["id"] . ">" . $row["title"] . "</a></td>
 					<td align=center valign='top'>" . $row["id"] . "</td>
 					<td align=center valign='top'>" . $row["minlevel"] . "</td>
 					<td align=center valign='top'>" . $row["maxlevel"] . "</td>
