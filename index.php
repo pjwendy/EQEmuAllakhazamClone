@@ -6,6 +6,7 @@
     $icons_url = "images/icons/";
     $images_url = "images/";
     require_once($includes_dir . 'mysql.php');
+    require_once('includes/guild.php');
     require_once($includes_dir . 'functions.php');
 
     /* Handles PJAX requests */
@@ -16,7 +17,7 @@
             $footer_javascript .= '
                 <script type="text/javascript">
                     $("#title").html("<h1>' . $page_title . '</h1>");
-                    document.title = "' . $page_title . '";
+                    document.title = ' . json_encode(guild_site_title($page_title)) . ';
                 </script>
             ';
         }
@@ -36,7 +37,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>The Guild's Allakhazam</title>
+    <title><?php echo htmlspecialchars(guild_site_title($page_title ?? '')); ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -243,7 +244,7 @@
                                                     $footer_javascript .= '
                                                         <script type="text/javascript">
                                                             $("#title").html("<h1>' . $page_title . '</h1>");
-                                                            document.title = "' . $page_title . '";
+                                                            document.title = ' . json_encode(guild_site_title($page_title)) . ';
                                                         </script>
                                                     ';
 

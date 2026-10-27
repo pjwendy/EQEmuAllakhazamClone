@@ -142,3 +142,30 @@ function guild_item_score_line($item_id) {
         return $r['score'] . " " . htmlspecialchars($r['class']);
     }, $rows)) . "</td></tr>";
 }
+
+// this server's guild's name (the guild dashboard knows it: GUILD_NAME), kept in a file for ten minutes so a page
+// doesn't wait on a request; the first guild in the database if the dashboard can't be asked
+function guild_name() {
+    static $name = null;
+    if ($name !== null) return $name;
+    $file = sys_get_temp_dir() . '/guild_name.txt';
+    if (is_readable($file) && time() - filemtime($file) < 600) {
+        return $name = trim(file_get_contents($file));
+    }
+    $g = guild_dashboard_json('/api/guild');
+    $found = is_array($g) && !empty($g['guild']) ? $g['guild'] : '';
+    if ($found === '') {
+        $r = @db_mysql_query("SELECT name FROM guilds ORDER BY id LIMIT 1");
+        $row = $r ? mysqli_fetch_array($r) : null;
+        $found = $row ? $row['name'] : '';
+    }
+    if ($found !== '') @file_put_contents($file, $found);
+    return $name = $found;
+}
+
+// the browser tab's title: the guild's name, then the page's
+function guild_site_title($page_title = '') {
+    $guild = guild_name();
+    $base = $guild !== '' ? $guild : "The Guild's Allakhazam";
+    return $page_title !== '' ? $base . ' · ' . strip_tags($page_title) : $base . ' · Allakhazam';
+}
