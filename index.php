@@ -75,13 +75,14 @@
     <div id="skin-wrap"></div>
     <div id="header">
         <div id="logo" class="guild-logo">
-            <a href="?" class="guild-home" title="Allakhazam: items, spells, NPCs and zones">
+            <div class="guild-home" title="Allakhazam: items, spells, NPCs and zones">
+                <a href="?" class="guild-mark" title="The guild's home">
                 <svg width="44" height="44" viewBox="0 0 64 64" aria-hidden="true">
                     <path d="M32 3 56 12v18c0 15-10 26-24 31C18 56 8 45 8 30V12z" fill="none" stroke="var(--gold)" stroke-width="3"/>
                     <path d="M22 22h20M22 32h20M22 42h12" stroke="var(--gold-2)" stroke-width="3" stroke-linecap="round"/>
-                </svg>
-                <span><b>Allakhazam</b><small>items · spells · NPCs · zones</small></span>
-            </a>
+                </svg></a>
+                <span><a href="?" class="guild-title"><b>Allakhazam</b></a><small><a href="?a=items">items</a> · <a href="?a=spells">spells</a> · <a href="?a=npcs">NPCs</a> · <a href="?a=zonelist">zones</a></small></span>
+            </div>
             <button type="button" class="guild-theme" id="guild-theme" title="Light or dark">&#9680;</button>
         </div>
 

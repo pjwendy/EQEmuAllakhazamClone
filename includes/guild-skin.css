@@ -37,6 +37,9 @@ body.has-zul-bar { padding-top: 0 !important; }
 .guild-home { display: flex; align-items: center; gap: 12px; text-decoration: none !important; background: none !important;
   position: static !important; width: auto !important; height: auto !important; }
 .guild-home b { display: block; font: 700 clamp(22px, 4vw, 32px) Cinzel, Georgia, serif !important; color: var(--gold-2) !important; letter-spacing: .5px; }
+.guild-home a { color: inherit; text-decoration: none !important; }
+.guild-home small a { color: var(--muted) !important; }
+.guild-home small a:hover { color: var(--gold-2) !important; }
 .guild-home small { display: block; color: var(--muted) !important; font-size: 12px; }
 .guild-theme { background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
 #global_search { position: static !important; flex: 0 1 360px; margin: 0 !important; }

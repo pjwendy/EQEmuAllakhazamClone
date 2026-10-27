@@ -43,6 +43,7 @@ foreach ($targets as $i => $t) {
     if (!$t['kills']) { $next = $i; break; }
 }
 
+$print_buffer .= "<div id='rt-live'>";
 $print_buffer .= "<p class='rt-note'>The mobs the guild is working towards, in order: the same list as the guild dashboard's. "
     . count($targets) . " targets.</p>";
 
@@ -98,6 +99,27 @@ foreach ($tiers as $tier => $rows) {
     $print_buffer .= "</tbody></table></details>";
 }
 
+$print_buffer .= "</div><script>
+(function () {
+    // kills and respawns change: read the list again every minute while the page is open, keeping the tiers that are open
+    var live = document.getElementById('rt-live');
+    var timer = setInterval(function () {
+        if (!document.body.contains(live)) { clearInterval(timer); return; }
+        if (document.hidden) return;
+        fetch('?a=raid_targets&v_ajax', {cache: 'no-store'}).then(function (r) { return r.text(); }).then(function (html) {
+            var fresh = new DOMParser().parseFromString(html, 'text/html').getElementById('rt-live');
+            if (!fresh) return;
+            var open = {};
+            live.querySelectorAll('details.rt-tier').forEach(function (d) { open[d.querySelector('.rt-tier-name').textContent] = d.open; });
+            fresh.querySelectorAll('details.rt-tier').forEach(function (d) {
+                var k = d.querySelector('.rt-tier-name').textContent;
+                if (k in open) d.open = open[k];
+            });
+            live.innerHTML = fresh.innerHTML;
+        }).catch(function () {});
+    }, 60000);
+})();
+</script>";
 $print_buffer .= "<style>
   .rt-note { color: var(--muted); }
   .rt-tier { margin: 12px 0; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; }
