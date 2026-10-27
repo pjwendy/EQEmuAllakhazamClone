@@ -71,7 +71,13 @@ if (!isset($_GET['v_tooltip'])) {
     $content .= return_where_item_sold($item_id);
     $content .= return_where_item_ground_spawn($item_id);
     require_once('includes/quests.php');
-    $content .= quests_section("Quests", "item", $item_id);
+    $quests = quests_section("Quests", "item", $item_id);
+    $content .= $quests ? "<tr><td>$quests</td></tr>" : "";
+    require_once('includes/guild.php');
+    $content .= guild_item_score_section($item_id);
+} else {
+    require_once('includes/guild.php');
+    $content .= guild_item_score_line($item_id);
 }
 
 $print_buffer .= display_table($content);

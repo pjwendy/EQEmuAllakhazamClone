@@ -151,6 +151,16 @@
                                                 </td>
                                             </tr>
                                             <tr>
+                                                <td class="menuh" nowrap="1">Docs...</td>
+                                            </tr>
+                                            <tr>
+                                                <td  class="menu_item">
+                                                    <li><a href="?a=portal&page=releases">Releases</a> </li>
+                                                    <li><a href="?a=portal&page=docs&doc=item-scores">How items are scored</a> </li>
+                                                    <li><a href="?a=portal&page=docs&doc=headless-api">Headless bot API</a> </li>
+                                                </td>
+                                            </tr>
+                                            <tr>
                                                 <td class="menuh" nowrap="1">Quests...</td>
                                             </tr>
                                             <tr>

@@ -98,3 +98,47 @@ function guild_dashboard_url($path) {
     $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
     return "$scheme://$host:8766$path";
 }
+
+// what the guild thinks an item is worth to each class that can use it: guild.item_values (puppeteer
+// docs/public/item-scores.md has the arithmetic: stats, weapon, effects and resists, weighted per class and level)
+function guild_item_scores($item_id) {
+    static $classes = array(1 => 'Warrior', 2 => 'Cleric', 3 => 'Paladin', 4 => 'Ranger', 5 => 'Shadow Knight', 6 => 'Druid',
+        7 => 'Monk', 8 => 'Bard', 9 => 'Rogue', 10 => 'Shaman', 11 => 'Necromancer', 12 => 'Wizard', 13 => 'Magician',
+        14 => 'Enchanter', 15 => 'Beastlord', 16 => 'Berserker');
+    $r = @db_mysql_query("SELECT class_id, stats, weapon, effects, resists, reqlevel, reclevel FROM guild.item_values WHERE item_id = " . intval($item_id));
+    $out = array();
+    while ($r && ($row = mysqli_fetch_array($r))) {
+        $level = max(1, intval($row['reclevel']), intval($row['reqlevel']));
+        $rw = ($level < 20 ? 0.1 : ($level < 40 ? 0.3 : ($level < 50 ? 0.6 : 1.0))) * (in_array(intval($row['class_id']), array(1, 3, 5)) ? 1.5 : 1.0);
+        $out[] = array('class' => $classes[intval($row['class_id'])] ?? 'Class ' . $row['class_id'], 'level' => $level,
+            'score' => round($row['stats'] + $row['weapon'] + $row['effects'] + $rw * $row['resists'], 1),
+            'stats' => round($row['stats'], 1), 'weapon' => round($row['weapon'], 1), 'effects' => round($row['effects'], 1),
+            'resists' => round($row['resists'], 1));
+    }
+    usort($out, function ($a, $b) { return $b['score'] <=> $a['score']; });
+    return $out;
+}
+
+// the item page's section: every class's score with its four parts
+function guild_item_score_section($item_id) {
+    $rows = guild_item_scores($item_id);
+    if (!$rows) return "";
+    $html = "<tr><td colspan='2'><h2 class='section_header'>Guild score</h2>"
+        . "<p>What the item is worth to each class at its recommended level, in points (one hit point is one point). "
+        . "<a href='?a=portal&page=docs&doc=item-scores'>How it's worked out</a>.</p>"
+        . "<table class='datatable'><tr><th>Class</th><th>Score</th><th>Stats</th><th>Weapon</th><th>Effects</th><th>Resists</th></tr>";
+    foreach ($rows as $r) {
+        $html .= "<tr><td>" . htmlspecialchars($r['class']) . "</td><td><b>" . $r['score'] . "</b></td><td>" . $r['stats'] . "</td><td>"
+            . $r['weapon'] . "</td><td>" . $r['effects'] . "</td><td>" . $r['resists'] . "</td></tr>";
+    }
+    return $html . "</table></td></tr>";
+}
+
+// the popup's line: the best three classes
+function guild_item_score_line($item_id) {
+    $rows = array_slice(guild_item_scores($item_id), 0, 3);
+    if (!$rows || $rows[0]['score'] <= 0) return "";
+    return "<tr><td colspan='2'><b>Guild score: </b>" . implode(", ", array_map(function ($r) {
+        return $r['score'] . " " . htmlspecialchars($r['class']);
+    }, $rows)) . "</td></tr>";
+}

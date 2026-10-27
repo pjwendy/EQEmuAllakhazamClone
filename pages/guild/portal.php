@@ -10,10 +10,16 @@ $portal = array(
     'reports'  => array("Daily Reports", "/reports/"),
     'upgrades' => array("Upgrades", "/upgrades"),
     'named'    => array("Named", "/named"),
+    'releases' => array("Releases", "/releases"),
+    'docs'     => array("Docs", "/docs"),
 );
 $which = isset($_GET['page']) && isset($portal[$_GET['page']]) ? $_GET['page'] : 'home';
 $page_title = $portal[$which][0];
-$src = htmlspecialchars(guild_dashboard_url($portal[$which][1]), ENT_QUOTES);
+$path = $portal[$which][1];
+if ($which == 'docs' && isset($_GET['doc']) && preg_match('/^[a-z0-9-]+$/', $_GET['doc'])) {
+    $path .= '/' . $_GET['doc'];  // one document (how items are scored, the headless API)
+}
+$src = htmlspecialchars(guild_dashboard_url($path), ENT_QUOTES);
 
 $print_buffer .= "<iframe id='guild-frame' src='$src' title='" . htmlspecialchars($page_title, ENT_QUOTES)
     . "' style='border:0;width:100%;height:900px;display:block' scrolling='no'></iframe>
