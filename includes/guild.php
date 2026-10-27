@@ -87,3 +87,14 @@ $guild_page_style = "<style>
   a.gp-maplink .gp-on { box-shadow: 0 0 6px var(--good); }
   a.gp-maplink:hover .gp-on { transform: scale(1.4); }
 </style>";
+
+// the guild dashboard's pages (puppeteer guild/dashboard), which the portal pages frame. Behind the guild's proxy
+// they're on this same site (/home, /reports/, /upgrades, /named); otherwise on the dashboard's own port.
+function guild_dashboard_url($path) {
+    if (!empty($_SERVER['HTTP_X_FORWARDED_HOST'])) {
+        return $path;
+    }
+    $host = preg_replace('/:\d+$/', '', $_SERVER['HTTP_HOST'] ?? 'localhost');
+    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+    return "$scheme://$host:8766$path";
+}

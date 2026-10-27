@@ -19,6 +19,8 @@ if ($route == "spells") {
     require_once('pages/zones/zonelist.php');
 } else if ($route == "items") {
     require_once('pages/items/items.php');
+} else if ($route == "portal") {
+    require_once('pages/guild/portal.php');
 } else if ($route == "quests") {
     require_once('pages/quests/quests.php');
 } else if ($route == "quest") {
@@ -63,15 +65,9 @@ if ($route == "spells") {
     require_once('pages/zones/zones_by_era/' . $_GET['era'] . '.php');
     echo '</td></tr></table>';
 } else {
-    if (file_exists('pages/front_page.php')) {
-        require_once('pages/front_page.php');
-    } else {
-        echo '
-            <h2>Welcome to ' . $site_name . ' EQEmu Allakhazam!</h2>
-            <br>
-            Get started with the menu on the left!
-        ';
-    }
+    // the front page is the guild's home (the dashboard)
+    $_GET['page'] = 'home';
+    require_once('pages/guild/portal.php');
 }
 
 

@@ -94,8 +94,7 @@
                 <li class="has-sub first-child  nc-home"><a href="?">Home</a>
                     <div><em></em><var></var><strong></strong>
                         <ul>
-                            <li class="first-child  nc-news-archives"><a href="/">The guild</a> </li>
-                            <li class="last-child  nc-zam-tools"><a href="http://eqemulator.org">EQEmulator</a></li>
+                            <li class="first-child last-child  nc-zam-tools"><a href="http://eqemulator.org">EQEmulator</a></li>
                         </ul>
                     </div>
                 </li>
@@ -141,12 +140,13 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td class="menuh" nowrap="1">Players...</td>
+                                                <td class="menuh" nowrap="1">Guild...</td>
                                             </tr>
                                             <tr>
                                                 <td  class="menu_item">
-                                                    <li><a href="?a=characters">Characters</a> </li>
-                                                    <li><a href="?a=guilds">Guilds</a> </li>
+                                                    <li><a href="?a=portal&page=reports">Daily Reports</a> </li>
+                                                    <li><a href="?a=portal&page=upgrades">Upgrades</a> </li>
+                                                    <li><a href="?a=portal&page=named">Named</a> </li>
                                                 </td>
                                             </tr>
                                             <tr>
