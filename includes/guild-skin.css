@@ -37,6 +37,10 @@ body.has-zul-bar { padding-top: 0 !important; }
 .guild-home { display: flex; align-items: center; gap: 12px; text-decoration: none !important; background: none !important;
   position: static !important; width: auto !important; height: auto !important; }
 .guild-home b { display: block; font: 700 clamp(22px, 4vw, 32px) Cinzel, Georgia, serif !important; color: var(--gold-2) !important; letter-spacing: .5px; }
+/* (zam's "#logo a" makes every link in the logo a 106 by 165 block: these are inline links) */
+#logo.guild-logo a { display: inline !important; height: auto !important; width: auto !important; background: none !important; }
+#logo.guild-logo a.guild-mark { display: inline-flex !important; }
+#logo.guild-logo a.guild-title { display: block !important; }
 .guild-home a { color: inherit; text-decoration: none !important; }
 .guild-home small a { color: var(--muted) !important; }
 .guild-home small a:hover { color: var(--gold-2) !important; }
