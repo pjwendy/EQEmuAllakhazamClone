@@ -44,6 +44,11 @@ if ($name !== '' && in_array($which, array('character', 'upgrades'), true)) {
 }
 $src = htmlspecialchars($which == 'map' ? $path : guild_dashboard_url($path), ENT_QUOTES);
 
+if ($fixed) {
+    // a map wants the whole right-hand side: the page's own width limit and padding go while it's showing
+    $print_buffer .= "<style>#bg-wrapper { max-width: none !important; } #col-main-inner-3 { padding-left: 0 !important; padding-right: 0 !important; }
+        .page-content { margin-right: 0 !important; }</style>";
+}
 $print_buffer .= "<iframe id='guild-frame' src='$src' title='" . htmlspecialchars($page_title, ENT_QUOTES)
     . "' style='border:0;width:100%;height:" . ($fixed ? "calc(100vh - 200px);min-height:520px" : "900px") . ";display:block' scrolling='no'></iframe>
 " . ($fixed ? "" : "<script>
