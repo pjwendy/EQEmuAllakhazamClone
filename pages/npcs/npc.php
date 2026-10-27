@@ -414,6 +414,8 @@ if (mysqli_num_rows($result) > 0) {
     }
 }
 $print_buffer .= "</ul>";
+require_once('includes/quests.php');
+$print_buffer .= quests_section("Quests", "npc", $id);
 $print_buffer .= "</td></tr></table>";
 
 $print_buffer .= "</td></tr></table>";

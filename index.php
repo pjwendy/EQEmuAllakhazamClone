@@ -147,6 +147,14 @@
                                                 </td>
                                             </tr>
                                             <tr>
+                                                <td class="menuh" nowrap="1">Quests...</td>
+                                            </tr>
+                                            <tr>
+                                                <td  class="menu_item">
+                                                    <li><a href="?a=quests">All Quests</a> </li>
+                                                </td>
+                                            </tr>
+                                            <tr>
                                                 <td class="menuh" nowrap="1">Raids...</td>
                                             </tr>
                                             <tr>

@@ -37,6 +37,10 @@ $resources_menu .= "<li><a href=?a=zone&name=$name&mode=forage>" . $zone["long_n
 if ($display_task_info == TRUE) {
     $resources_menu .= "<li><a href=?a=zone&name=$name&mode=tasks>" . $zone["long_name"] . " Tasks</a>";
 }
+require_once('includes/quests.php');
+if (quests_available()) {
+    $resources_menu .= "<li><a href=?a=quests&zone=$name>" . $zone["long_name"] . " Quests</a>";
+}
 if ($allow_quests_npc == TRUE) {
     $resources_menu .= "<li><a href=$root_url" . "quests/zones.php?aZone=$name>" . $zone["long_name"] . " Quest NPCs</a>";
 }

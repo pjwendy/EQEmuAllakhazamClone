@@ -70,6 +70,8 @@ if (!isset($_GET['v_tooltip'])) {
     $content .= return_where_item_result_trade_skill($item_id);
     $content .= return_where_item_sold($item_id);
     $content .= return_where_item_ground_spawn($item_id);
+    require_once('includes/quests.php');
+    $content .= quests_section("Quests", "item", $item_id);
 }
 
 $print_buffer .= display_table($content);

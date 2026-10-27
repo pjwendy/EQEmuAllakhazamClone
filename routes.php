@@ -19,6 +19,10 @@ if ($route == "spells") {
     require_once('pages/zones/zonelist.php');
 } else if ($route == "items") {
     require_once('pages/items/items.php');
+} else if ($route == "quests") {
+    require_once('pages/quests/quests.php');
+} else if ($route == "quest") {
+    require_once('pages/quests/quest.php');
 } else if ($route == "tasks") {
     require_once('pages/tasks/tasks.php');
 } else if ($route == "factions") {
