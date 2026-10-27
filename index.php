@@ -138,6 +138,15 @@
                                                 </td>
                                             </tr>
                                             <tr>
+                                                <td class="menuh" nowrap="1">Players...</td>
+                                            </tr>
+                                            <tr>
+                                                <td  class="menu_item">
+                                                    <li><a href="?a=characters">Characters</a> </li>
+                                                    <li><a href="?a=guilds">Guilds</a> </li>
+                                                </td>
+                                            </tr>
+                                            <tr>
                                                 <td class="menuh" nowrap="1">Raids...</td>
                                             </tr>
                                             <tr>

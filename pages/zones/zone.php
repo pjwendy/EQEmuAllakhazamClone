@@ -63,6 +63,11 @@ $print_buffer .= "<p><b>Succor point : X (</b>" . floor($zone["safe_x"]) . ")  Y
 if ($zone["minium_level"] > 0) {
     $print_buffer .= "<br><b>Minimum level : </b>" . floor($zone["minium_level"]);
 }
+if ($mode == "npcs") {
+    // the zone's map, with the guild's camps on it (the guild dashboard's /api/zonemap)
+    require_once('pages/zones/zone_map.php');
+    $print_buffer .= guild_zone_map($name);
+}
 
 if ($mode == "npcs") {
     ////////////// NPCS
