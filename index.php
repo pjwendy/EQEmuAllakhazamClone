@@ -157,6 +157,8 @@
                                                 <td  class="menu_item">
                                                     <li><a href="?a=portal&page=releases">Releases</a> </li>
                                                     <li><a href="?a=portal&page=docs&doc=item-scores">How items are scored</a> </li>
+                                                    <li><a href="?a=portal&page=docs&doc=server-changes">Our server fork</a> </li>
+                                                    <li><a href="?a=portal&page=docs&doc=headless-server">Running the headless server</a> </li>
                                                     <li><a href="?a=portal&page=docs&doc=headless-api">Headless bot API</a> </li>
                                                 </td>
                                             </tr>
