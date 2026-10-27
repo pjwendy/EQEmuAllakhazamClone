@@ -48,7 +48,7 @@ foreach ($guilds as $g) {
         . "<th>Race</th><th>Class</th><th>Zone</th></tr></thead><tbody>";
     foreach ($members as $m) {
         $zone = $m['zone'] ? "<a href='?a=zone&name=" . urlencode($m['zone']) . "'>" . htmlspecialchars($m['zone_name']) . "</a>" : "";
-        $print_buffer .= "<tr><td>" . ($m['online'] ? "<span class='gp-on' title='online'></span>" : "") . guild_character_link($m['name'])
+        $print_buffer .= "<tr><td>" . guild_online_dot($m['name'], $m['online']) . guild_character_link($m['name'])
             . "</td><td>" . htmlspecialchars($m['title'] ?: "Rank " . $m['rank']) . "</td><td>" . intval($m['level'])
             . "</td><td>" . ($guild_races[$m['race']] ?? $m['race']) . "</td><td>" . ($guild_classes[$m['class']] ?? $m['class'])
             . "</td><td>$zone</td></tr>";

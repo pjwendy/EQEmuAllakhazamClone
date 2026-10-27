@@ -24,14 +24,14 @@ while ($r = mysqli_fetch_array($result)) {
 }
 
 $print_buffer .= $guild_page_style;
-$print_buffer .= "<p class='gp-note'>" . count($rows) . " characters. Each name opens the character browser: gear, bags, bank, skills and bots.</p>";
+$print_buffer .= "<p class='gp-note'>" . count($rows) . " characters. Each name opens the character browser (gear, bags, bank, skills and bots); a green dot, online, opens their map.</p>";
 $print_buffer .= "<table class='display_table container_div datatable gp-table'><thead><tr>"
     . "<th>Name</th><th>Level</th><th>Race</th><th>Class</th><th>Guild</th><th>Zone</th><th>Last on</th></tr></thead><tbody>";
 foreach ($rows as $r) {
     $guild = $r['guild'] ? "<a href='?a=guilds#guild-" . intval($r['guild_id']) . "'>" . htmlspecialchars($r['guild']) . "</a>" : "<span class='gp-muted'>—</span>";
     $zone = $r['zone'] ? "<a href='?a=zone&name=" . urlencode($r['zone']) . "'>" . htmlspecialchars($r['zone_name']) . "</a>" : "";
     $last = $r['last_login'] ? date('Y-m-d H:i', $r['last_login']) : "";
-    $print_buffer .= "<tr><td>" . ($r['online'] ? "<span class='gp-on' title='online'></span>" : "") . guild_character_link($r['name'])
+    $print_buffer .= "<tr><td>" . guild_online_dot($r['name'], $r['online']) . guild_character_link($r['name'])
         . "</td><td>" . intval($r['level']) . "</td><td>" . ($guild_races[$r['race']] ?? $r['race'])
         . "</td><td>" . ($guild_classes[$r['class']] ?? $r['class']) . "</td><td>$guild</td><td>$zone</td><td class='gp-muted'>$last</td></tr>";
 }

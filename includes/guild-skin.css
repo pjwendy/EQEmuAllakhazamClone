@@ -93,6 +93,11 @@ table.dataTable.display tbody td, table.dataTable.row-border tbody td { border-t
    first table down below the whole menu, a gap the menu's height under the title (Characters, Raid Targets) */
 .page-content .datatable, .page-content-ajax .datatable { clear: none !important; }
 
+/* the old pages' lists without a list round them (Zones by Era, its eras, ...): their bullets hung off the
+   page's left edge; indented as a list's would be */
+.page-content li, .page-content-ajax li { margin-left: 1.6em; }
+.page-content ul li, .page-content ol li, .page-content-ajax ul li, .page-content-ajax ol li { margin-left: 0; }
+
 /* forms */
 input[type=text], input[type=password], input.search, .inputtext, .inputpassword, select, textarea, .search_box {
   background: var(--panel) !important; color: var(--text) !important; border: 1px solid var(--line) !important; border-radius: 8px !important;

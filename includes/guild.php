@@ -33,6 +33,39 @@ function guild_dashboard_json($path) {
     return $raw ? json_decode($raw, true) : null;
 }
 
+// a character's map viewer (the runner's, one port a character), as the guild dashboard's Map button has it:
+// through the public proxy /map/<port>/, else that port on the runner's machine (the dashboard's VIEWER_HOST,
+// or this host). Only this server's guild has one; others get "".
+function guild_map_url($name) {
+    static $roster = null;
+    if ($roster === null) {
+        $g = guild_dashboard_json('/api/guild');
+        $roster = array('host' => $g['viewer_host'] ?? '', 'ports' => array(), 'online' => array());
+        foreach (($g['roster'] ?? array()) as $c) {
+            if (!empty($c['viewer_port'])) $roster['ports'][$c['name']] = intval($c['viewer_port']);
+            $roster['online'][$c['name']] = !empty($c['online']);
+        }
+    }
+    if ($name === null) return $roster;
+    $port = $roster['ports'][$name] ?? 0;
+    if (!$port) return '';
+    if (!empty($_SERVER['HTTP_X_FORWARDED_HOST'])) return "/map/$port/";
+    $host = $roster['host'] ?: preg_replace('/:\d+$/', '', $_SERVER['HTTP_HOST'] ?? 'localhost');
+    return "http://$host:$port/";
+}
+
+// the online dot: a link to the character's map when it has one
+function guild_online_dot($name, $online) {
+    $roster = guild_map_url(null);
+    if (isset($roster['online'][$name])) {
+        $online = $roster['online'][$name];  // (this server's guild: the runner's own record, fresher than the guild table's)
+    }
+    if (!$online) return '';
+    $map = guild_map_url($name);
+    $dot = "<span class='gp-on' title='online" . ($map ? ": open " . htmlspecialchars($name, ENT_QUOTES) . "'s map" : "") . "'></span>";
+    return $map ? "<a class='gp-maplink' href='" . htmlspecialchars($map, ENT_QUOTES) . "' target='map-" . htmlspecialchars($name, ENT_QUOTES) . "'>$dot</a>" : $dot;
+}
+
 $guild_classes = array(1 => "Warrior", 2 => "Cleric", 3 => "Paladin", 4 => "Ranger", 5 => "Shadow Knight", 6 => "Druid",
     7 => "Monk", 8 => "Bard", 9 => "Rogue", 10 => "Shaman", 11 => "Necromancer", 12 => "Wizard", 13 => "Magician",
     14 => "Enchanter", 15 => "Beastlord", 16 => "Berserker");
@@ -50,4 +83,7 @@ $guild_page_style = "<style>
   .gp-guild summary { cursor: pointer; }
   .gp-guild-name { font: 600 17px Cinzel, Georgia, serif; color: var(--gold-2); }
   .gp-on { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--good); margin-right: 6px; }
+  a.gp-maplink { border: 0 !important; padding: 4px 2px; }
+  a.gp-maplink .gp-on { box-shadow: 0 0 6px var(--good); }
+  a.gp-maplink:hover .gp-on { transform: scale(1.4); }
 </style>";
