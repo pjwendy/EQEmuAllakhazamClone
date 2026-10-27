@@ -1,73 +1,112 @@
 <?php
+/*
+ * The guild's raid targets: the same list, and the same view of each, as the guild dashboard's Raid Targets
+ * (puppeteer guild/dashboard: raid_targets.json, and what the server says of each target), fetched from the
+ * dashboard's /api/targets rather than worked out a second time here. Grouped by expansion; each target's
+ * level, zone, whether it's up (or when it's back, or that its event spawns it), whether it would drop an
+ * upgrade for anyone in the guild, and the guild's kills of it.
+ * The dashboard is GUILD_DASHBOARD_URL (the container's environment), else guild-dashboard:8766 on the
+ * stack's network.
+ */
 
-$page_title = "Raid Targets By Level of Difficulty";
+$page_title = "Raid Targets";
 
-$print_buffer .= "<p>Here are suggested raid target taken from the main Allakhazam site that are applicable for EQEmu which can be found <a href=\"https://everquest.allakhazam.com/wiki/eq%3Araid_progression_guide\">here</a><p>";
+$dashboard = getenv('GUILD_DASHBOARD_URL') ?: 'http://guild-dashboard:8766';
+$context   = stream_context_create(array('http' => array('timeout' => 15)));
+$raw       = @file_get_contents($dashboard . '/api/targets', false, $context);
+$data      = $raw ? json_decode($raw, true) : null;
 
-$levels = array();
-$levels[0] = "Stage 0 (~Vox/Nagafen)";
-$levels[1] = "Stage 1 (~Kunark)";
-$levels[2] = "Stage 2 (~Velious)";
-$levels[3] = "Stage 3 (~Avatar of War/NTOV)";
-$levels[4] = "Stage 4 (~Emperor Ssraeshza)";
-$levels[5] = "Stage 5 (~Vex Thal)";
-$levels[6] = "Stage 6 (~Elemental Planes)";
-$levels[7] = "Stage 7 (~Plane of Time)";
-$levels[8] = "Stage 8 (~Uqua)";
-$levels[9] = "Stage 9 (~Qvic)";
-$levels[10] = "Stage 10 (~Txevu)";
-$levels[11] = "Stage 11 (~Kessdona/Rikkukin)";
-$levels[12] = "Stage 12 (~MPG Trials; Tacvi)";
-$levels[13] = "Stage 13 (~Anguish; Demiplane Tier 1)";
-$levels[14] = "Stage 14 (~Demiplane Tier 2; Theater of Blood)";
+function rt_esc($s) { return htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8'); }
 
-$query = "SELECT raid_targets.`level`, raid_targets.killed, raid_targets.killimage, npc_types.Name, npc_types.id FROM raid_targets INNER JOIN npc_types ON npc_types.id=raid_targets.npc ORDER BY LEVEL ASC ,killed DESC"; 
-$result = db_mysql_query($query) or message_die('raid_targets.php', 'MYSQL_QUERY', $query, mysqli_error());
-$cpt = 0;
-$targets = array();
-while ($res = mysqli_fetch_array($result)) {
-    $targets[$cpt]["level"] = $res["level"];
-    $targets[$cpt]["killed"] = $res["killed"];
-    $targets[$cpt]["name"] = $res["Name"];
-    $targets[$cpt]["id"] = $res["id"];
-    $targets[$cpt]["killimage"] = $res["killimage"];
-    $cpt++;
+function rt_until($t) {
+    $s = $t - time();
+    if ($s < 3600) return max(1, round($s / 60)) . " min";
+    if ($s < 86400) return number_format($s / 3600, 1) . " h";
+    return number_format($s / 86400, 1) . " d";
 }
 
-$print_buffer .= "<table><tr valign=top><td width=100%>";
+function rt_ago($t) {
+    $s = time() - $t;
+    if ($s < 3600) return max(1, round($s / 60)) . " min ago";
+    if ($s < 86400) return round($s / 3600) . " h ago";
+    return round($s / 86400) . " d ago";
+}
 
-for ($i = 0; $i < sizeof($levels); $i++) {
+if (!$data || !isset($data['targets'])) {
+    $print_buffer .= "<p class='rt-note'>The guild's raid targets aren't available right now (the guild dashboard didn't answer).</p>";
+    return;
+}
 
-    $print_buffer .= "<table border=1 style='width:100%' class='display_table container_div datatable'>";
-    $print_buffer .= "<thead class='menuh'>";
-    $print_buffer .= "<th class=tab_title>" . $levels[$i] . "</th>";   
-    $print_buffer .= "</thead>";
+$targets = $data['targets'];
+$next    = -1;
+foreach ($targets as $i => $t) {
+    if (!$t['kills']) { $next = $i; break; }
+}
 
-    for ($j = 0; $j < sizeof($targets); $j++) {
+$print_buffer .= "<p class='rt-note'>The mobs the guild is working towards, in order: the same list as the guild dashboard's. "
+    . count($targets) . " targets.</p>";
 
-        if (strcmp(strval($i),strval($targets[$j]["level"]))==0) {
-            
-            $killed=" ";
-            if (strcmp(strval($targets[$j]["killed"]),"1") == 0) {
-                if ($targets[$j]["killimage"] === NULL) 
-                    $killed = "*";
-                else
-                    $killed = "<a href=images/kills/" . $targets[$j]["killimage"] . ">*</a>";
-            }
-            $name=$targets[$j]["name"];
-            $name=str_replace("_"," ",$name);
-            $name=str_replace("#","",$name);
-            $print_buffer .= "<tr>
-                <td class=tab_left>" . $killed . " " . "<a href=?a=npc&id=" . $targets[$j]["id"] . ">" . $name . "</a></td>
-                </tr>";
+$tiers = array();
+foreach ($targets as $i => $t) {
+    $tiers[$t['tier'] ?: 'Other'][] = array($i, $t);
+}
+
+foreach ($tiers as $tier => $rows) {
+    $killed = 0;
+    foreach ($rows as $r) { if ($r[1]['kills']) $killed++; }
+    $print_buffer .= "<details class='rt-tier'" . ($killed < count($rows) && $tier === $targets[max(0, $next)]['tier'] ? " open" : "") . ">"
+        . "<summary><span class='rt-tier-name'>" . rt_esc($tier) . "</span> <span class='rt-count'>" . count($rows)
+        . " targets · $killed killed</span></summary>";
+    $print_buffer .= "<table class='display_table container_div datatable rt-table' style='width:100%'><thead><tr>"
+        . "<th>Target</th><th>Level</th><th>Zone</th><th>Status</th><th>Useful to us</th><th>Our kills</th></tr></thead><tbody>";
+    foreach ($rows as $r) {
+        list($i, $t) = $r;
+        $name = rt_esc($t['name']);
+        if (!empty($t['npc_ids'])) {
+            $name = "<a href='?a=npc&id=" . intval($t['npc_ids'][0]) . "'>$name</a>";
         }
+        if ($i === $next) {
+            $name .= " <span class='rt-badge'>Next</span>";
+        }
+        $note  = $t['note'] ? "<div class='rt-sub'>" . rt_esc($t['note']) . "</div>" : "";
+        $lv    = $t['levels'] ? ($t['levels'][0] == $t['levels'][1] ? $t['levels'][0] : $t['levels'][0] . "–" . $t['levels'][1]) : "?";
+        if (!$t['known']) {
+            $status = "<span class='rt-down'>not on this server</span>";
+        } elseif (!empty($t['scripted'])) {
+            $status = "<span class='rt-down' title='No spawn point: its encounter spawns it'>spawned by its event</span>";
+        } elseif ($t['up']) {
+            $status = "<span class='rt-up'>up</span>" . ($t['count'] > 1 ? " <span class='rt-down'>(" . $t['up'] . " of " . $t['count'] . ")</span>" : "");
+        } elseif ($t['next_up']) {
+            $status = "<span class='rt-down'>back in " . rt_until($t['next_up']) . "</span>";
+        } else {
+            $status = "<span class='rt-down'>down</span>";
+        }
+        $v = $t['value'];
+        if (!$v) {
+            $useful = "<span class='rt-down'>working it out…</span>";
+        } elseif ($v['worth_farming']) {
+            $useful = $v['drops_now'] . " drop" . ($v['drops_now'] == 1 ? "" : "s") . " · " . $v['people_now'] . " of us"
+                . "<div class='rt-sub'>best: " . rt_esc($v['best']) . "</div>";
+        } else {
+            $useful = "<span class='rt-down'>outgrown: no upgrades left for anyone</span>";
+        }
+        $kills = $t['kills'] ? $t['kills'] . " · last by " . rt_esc($t['last_by']) . " " . rt_ago($t['last_kill'])
+                             : "<span class='rt-down'>not yet</span>";
+        $print_buffer .= "<tr" . ($i === $next ? " class='rt-next'" : "") . "><td><b>$name</b>$note</td><td>$lv</td><td>"
+            . rt_esc(implode(", ", $t['zones'])) . "</td><td>$status</td><td>$useful</td><td>$kills</td></tr>";
     }
-
-    $print_buffer .= "</table>";
-
+    $print_buffer .= "</tbody></table></details>";
 }
 
-
-$print_buffer .= "</td><td width=0% nowrap>";
-$print_buffer .= "</td></tr></table>";
-?>
+$print_buffer .= "<style>
+  .rt-note { color: var(--muted); }
+  .rt-tier { margin: 12px 0; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; }
+  .rt-tier summary { cursor: pointer; }
+  .rt-tier-name { font: 600 17px Cinzel, Georgia, serif; color: var(--gold-2); }
+  .rt-count, .rt-sub, .rt-down { color: var(--muted); font-size: 12px; }
+  .rt-up { color: var(--good); font-weight: 600; }
+  .rt-badge { font: 600 11px Inter, sans-serif; color: var(--bg); background: var(--gold); border-radius: 999px; padding: 1px 8px; }
+  .rt-table { margin-top: 10px; }
+  .rt-table td { vertical-align: top; padding: 6px 8px; }
+  tr.rt-next td { background: var(--panel-2) !important; }
+</style>";
