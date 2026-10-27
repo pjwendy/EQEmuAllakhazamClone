@@ -1,0 +1,121 @@
+/* The guild's look over Allakhazam: the dashboard's colours (puppeteer guild/dashboard/style.css), Cinzel
+   and Inter, light or dark (the same "theme" the dashboard keeps). Loaded last, it restyles the old site's
+   own (zam_files/*.css, includes/alla.css) without changing its layout. */
+:root {
+  --bg: #0f0d0b; --panel: #1a1714; --panel-2: #221e1a; --line: #3a322a; --text: #ece4d6; --muted: #a39683;
+  --gold: #d8a94a; --gold-2: #f2cf7d; --good: #6fbf73; --bad: #d9614c; --info: #6fa8dc; --violet: #b48ce0;
+  --shadow: 0 1px 0 rgba(255,255,255,.03) inset, 0 8px 24px rgba(0,0,0,.35);
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f6f1e7; --panel: #fffdf8; --panel-2: #f3ece0; --line: #ddd1bd; --text: #2a231b; --muted: #7a6c58;
+    --gold: #a87a1e; --gold-2: #8a6212; --shadow: 0 6px 18px rgba(80,60,20,.08);
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f6f1e7; --panel: #fffdf8; --panel-2: #f3ece0; --line: #ddd1bd; --text: #2a231b; --muted: #7a6c58;
+  --gold: #a87a1e; --gold-2: #8a6212; --shadow: 0 6px 18px rgba(80,60,20,.08);
+}
+
+/* the page */
+html, body, #bg-wrapper, #wrapper, #body, #cols, #col-main, #col-main-inner, #col-main-inner-2, #col-main-inner-3,
+#skin-wrap, footer, .copyright {
+  background: var(--bg) !important; background-image: none !important; color: var(--text) !important;
+}
+body, td, th, div, span, p, li, input, select, textarea, button { font-family: Inter, system-ui, sans-serif !important; }
+body { font-size: 14px !important; line-height: 1.45; }
+.zul-bar, #headjs, #skin-wrap { display: none !important; }
+body.has-zul-bar { padding-top: 0 !important; }
+#bg-wrapper { max-width: 1280px; margin: 0 auto !important; padding: 0 16px; box-sizing: border-box; }
+#wrapper, #body, #cols, #col-main, #col-main-inner, #col-main-inner-2, #col-main-inner-3 { border: 0 !important; box-shadow: none !important; }
+
+/* the header: our crest and title, the search, the theme button */
+#header { background: transparent !important; height: auto !important; padding: 22px 0 8px; display: flex; flex-wrap: wrap;
+  gap: 14px; align-items: center; position: relative; border: 0 !important; }
+#logo.guild-logo { position: static !important; background: none !important; width: auto !important; height: auto !important;
+  display: flex; align-items: center; gap: 12px; flex: 1 1 320px; }
+.guild-home { display: flex; align-items: center; gap: 12px; text-decoration: none !important; background: none !important;
+  position: static !important; width: auto !important; height: auto !important; }
+.guild-home b { display: block; font: 700 clamp(22px, 4vw, 32px) Cinzel, Georgia, serif !important; color: var(--gold-2) !important; letter-spacing: .5px; }
+.guild-home small { display: block; color: var(--muted) !important; font-size: 12px; }
+.guild-theme { background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+#global_search { position: static !important; flex: 0 1 360px; margin: 0 !important; }
+#global_search a { display: none !important; }
+#global_search input, #qq { width: 100% !important; box-sizing: border-box; background: var(--panel) !important; color: var(--text) !important;
+  border: 1px solid var(--line) !important; border-radius: 8px !important; padding: 8px 11px !important; height: auto !important;
+  font-size: 14px !important; background-image: none !important; }
+#nav, #menu_horiz { background: transparent !important; border: 0 !important; position: static !important; width: 100%; }
+#menu_horiz > li > a { color: var(--gold-2) !important; font: 600 13px Inter, sans-serif !important; background: none !important; }
+#menu_horiz div, #menu_horiz ul ul { background: var(--panel) !important; border: 1px solid var(--line) !important; box-shadow: var(--shadow); }
+
+/* links */
+a, a:link, a:visited, A:link, A:visited { color: var(--gold-2) !important; }
+a:hover, A:hover, a:active { color: var(--gold) !important; }
+
+/* headings and titles */
+h1, h2, h3, .page_title, .page_small_title, .section_header, .tab_title, #title h1 {
+  font-family: Cinzel, Georgia, serif !important; color: var(--gold-2) !important; background: none !important;
+  border-color: var(--line) !important; letter-spacing: .3px;
+}
+.page_title, #title h1 { font-size: 24px !important; }
+.section_header, .tab_title, .myheader { color: var(--gold) !important; }
+
+/* the left menu */
+.side_menu table { background: var(--panel) !important; border: 1px solid var(--line) !important; border-radius: 12px;
+  box-shadow: var(--shadow); border-collapse: separate !important; overflow: hidden; }
+.menuh, .menu_title { background: var(--panel-2) !important; color: var(--gold) !important; font: 600 12px Inter, sans-serif !important;
+  text-transform: uppercase; letter-spacing: .6px; border: 0 !important; padding: 8px 10px !important; }
+.menu_item { background: var(--panel) !important; color: var(--text) !important; border: 0 !important; padding: 4px 12px !important; }
+.menu_item a { color: var(--text) !important; }
+.menu_item a:hover { color: var(--gold-2) !important; }
+
+/* panels, boxes and tables */
+.main_page, .infobox, .mainpagebox, .db-page, .datatable, .display_table, .container, .item-wrapper, .tablist, .lr, .s2-lr, .s2-dr {
+  background: var(--panel) !important; color: var(--text) !important; border-color: var(--line) !important;
+}
+table, TABLE { border-color: var(--line) !important; color: var(--text) !important; }
+td, th { border-color: var(--line) !important; }
+tr, td { background-color: transparent; }
+th, thead td, table.dataTable thead th, table.dataTable thead td, .myline {
+  background: var(--panel-2) !important; color: var(--gold) !important; font-weight: 600 !important; border-bottom: 1px solid var(--line) !important;
+}
+table.dataTable, table.dataTable tbody tr, table.display tbody tr, table.dataTable.stripe tbody tr.odd, table.dataTable.display tbody tr.odd,
+table.dataTable.display tbody tr.even { background: var(--panel) !important; color: var(--text) !important; }
+table.dataTable.stripe tbody tr.odd, table.dataTable.display tbody tr.odd { background: var(--panel-2) !important; }
+table.dataTable tbody tr:hover, table.dataTable.display tbody tr:hover { background: var(--panel-2) !important; outline: 1px solid var(--gold); }
+table.dataTable.display tbody td, table.dataTable.row-border tbody td { border-top: 1px solid var(--line) !important; }
+.dataTables_wrapper, .dataTables_info, .dataTables_length, .dataTables_filter, .dataTables_paginate { color: var(--muted) !important; }
+.dataTables_wrapper .dataTables_paginate .paginate_button { color: var(--text) !important; background: var(--panel) !important;
+  border: 1px solid var(--line) !important; border-radius: 6px; }
+.dataTables_wrapper .dataTables_paginate .paginate_button.current { border-color: var(--gold) !important; color: var(--gold-2) !important; }
+
+/* forms */
+input[type=text], input[type=password], input.search, .inputtext, .inputpassword, select, textarea, .search_box {
+  background: var(--panel) !important; color: var(--text) !important; border: 1px solid var(--line) !important; border-radius: 8px !important;
+  background-image: none !important; padding: 6px 9px; box-shadow: none !important;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--gold) !important; outline: none; }
+.inputsubmit, input[type=submit], button, a.button {
+  background: var(--gold) !important; color: var(--bg) !important; border: 0 !important; border-radius: 8px !important;
+  font: 600 13px Inter, sans-serif !important; padding: 6px 12px !important; background-image: none !important; cursor: pointer;
+}
+.guild-theme { background: var(--panel) !important; color: var(--text) !important; border: 1px solid var(--line) !important; }
+
+/* item and spell tooltips (the zam ones) */
+#tooltip_object, #easyTooltip2, .tooltip, .zam-tooltip, .wowhead-tooltip, .item-tooltip {
+  background: var(--panel) !important; color: var(--text) !important; border: 1px solid var(--gold) !important;
+  border-radius: 10px !important; box-shadow: var(--shadow) !important;
+}
+#tooltip_object *, #easyTooltip2 * { background-color: transparent !important; color: var(--text) !important; }
+#tooltip_object a, #easyTooltip2 a { color: var(--gold-2) !important; }
+
+/* everything else the old pages set black on beige */
+[style*="background-color: #"], [style*="background:#"], [style*="background: #"] { background-color: var(--panel) !important; }
+[bgcolor] { background-color: var(--panel) !important; }
+font[color] { color: inherit !important; }
+hr { border: 0; border-top: 1px solid var(--line); }
+.copyright { color: var(--muted) !important; text-align: center; padding: 18px 0 30px; }
+
+@media (max-width: 860px) {
+  .side_menu { display: block !important; float: none !important; width: 100% !important; }
+}

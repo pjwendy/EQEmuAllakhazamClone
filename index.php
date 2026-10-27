@@ -33,8 +33,14 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>EQEmulator Allakhazam</title>
-    <link rel="icon" href="http://everquest.allakhazam.com/favicon.ico">
+    <title>The Guild's Allakhazam</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        /* the guild dashboard's light or dark, kept the same way (its "theme"), before anything draws */
+        try { var t = localStorage.getItem("theme"); if (t) document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+    </script>
     <link rel="stylesheet" type="text/css" href="includes/alla.css">
     <link rel="stylesheet" type="text/css" href="./zam_files/global.css">
     <link rel="stylesheet" type="text/css" href="./zam_files/site.css" id="css">
@@ -44,6 +50,8 @@
     <script src="./zam_files/jquery-migrate-1.2.1.min.js"></script>
 
     <link rel="stylesheet" type="text/css" href="./zam_files/zul.css" id="zul-bar-stylesheet">
+    <!-- the guild's look over all of the above: the dashboard's colours, fonts and light or dark -->
+    <link rel="stylesheet" type="text/css" href="includes/guild-skin.css">
 
     <?php
         if($hide_navbar){
@@ -62,12 +70,15 @@
 <div id="bg-wrapper" style="min-height: auto;">
     <div id="skin-wrap"></div>
     <div id="header">
-        <div id="logo" style="background: url(images/logos/eqemu.png) 0 10px no-repeat;">
-            <a href="#" style="background: url(images/logos/logo.png) right no-repeat;top:10px"></a>
-            <?php
-                if($site_logo)
-                    echo '<img src="' . $site_logo . '" style="width: 200px;height:auto;position: absolute;left: 340px;z-index: 900;bottom: 10px;">';
-            ?>"
+        <div id="logo" class="guild-logo">
+            <a href="?" class="guild-home" title="Allakhazam: items, spells, NPCs and zones">
+                <svg width="44" height="44" viewBox="0 0 64 64" aria-hidden="true">
+                    <path d="M32 3 56 12v18c0 15-10 26-24 31C18 56 8 45 8 30V12z" fill="none" stroke="var(--gold)" stroke-width="3"/>
+                    <path d="M22 22h20M22 32h20M22 42h12" stroke="var(--gold-2)" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+                <span><b>Allakhazam</b><small>items · spells · NPCs · zones</small></span>
+            </a>
+            <button type="button" class="guild-theme" id="guild-theme" title="Light or dark">&#9680;</button>
         </div>
 
         <form id="global_search">
@@ -80,9 +91,8 @@
                 <li class="has-sub first-child  nc-home"><a href="?">Home</a>
                     <div><em></em><var></var><strong></strong>
                         <ul>
-                            <li class="first-child  nc-news-archives"><a href="http://eqemulator.org">EQEmulator</a> </li>
-                            <li class="last-child  nc-zam-tools"><a href="http://everquest.allakhazam.com/"><span class="icon-tools">Official Allakhazam</span></a>
-                            </li>
+                            <li class="first-child  nc-news-archives"><a href="/">The guild</a> </li>
+                            <li class="last-child  nc-zam-tools"><a href="http://eqemulator.org">EQEmulator</a></li>
                         </ul>
                     </div>
                 </li>
@@ -269,6 +279,11 @@
         <script src="includes/js/datatables/media/js/jquery.dataTables.min.js"></script>
         <script type="text/javascript">
             Nav.init()
+            document.getElementById("guild-theme").onclick = function () {
+                var now = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+                document.documentElement.setAttribute("data-theme", now);
+                try { localStorage.setItem("theme", now); } catch (e) {}
+            };
         </script>
         <?php
             if($footer_javascript){
