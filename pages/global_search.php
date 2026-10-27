@@ -66,6 +66,26 @@ if($_GET['get_data']){
         }
         echo '</ul>';
     }
+    if($_GET['fetch_type'] == "global_characters") {
+        require_once('includes/guild.php');
+        $result = db_mysql_query("SELECT c.name, c.level, c.class " . guild_search_sql('characters', $name) . " ORDER BY c.name LIMIT 200");
+        echo '<ul>';
+        while ($row = mysqli_fetch_array($result)) {
+            echo '<li>' . guild_character_link($row['name']) . ' <span style="color:var(--muted)">level ' . intval($row['level']) . ' ' . htmlspecialchars(guild_class_name($row['class'])) . '</span></li>';
+        }
+        echo '</ul>';
+    }
+    if($_GET['fetch_type'] == "global_bots") {
+        require_once('includes/guild.php');
+        $result = db_mysql_query("SELECT b.name, b.level, b.class, o.name AS owner " . guild_search_sql('bots', $name) . " ORDER BY b.name LIMIT 200");
+        echo '<ul>';
+        while ($row = mysqli_fetch_array($result)) {
+            echo '<li><a href="' . htmlspecialchars(guild_character_url($row['owner']), ENT_QUOTES) . '#' . rawurlencode($row['name']) . '" target="character">'
+                . htmlspecialchars($row['name']) . '</a> <span style="color:var(--muted)">level ' . intval($row['level']) . ' ' . htmlspecialchars(guild_class_name($row['class']))
+                . ', ' . htmlspecialchars($row['owner']) . "'s bot</span></li>";
+        }
+        echo '</ul>';
+    }
     if($_GET['fetch_type'] == "global_items") {
         $query = "SELECT * FROM `items` WHERE `name` LIKE '%" . $name . "%' ORDER BY `name`";
         $result = db_mysql_query($query);
@@ -80,8 +100,11 @@ if($_GET['get_data']){
 }
 
 $tab_title = "";
+require_once('includes/guild.php');
 
 $global_search_count = array(
+    "characters" => array("Characters", "SELECT COUNT(*) as found_count " . guild_search_sql('characters', $name)),
+    "bots" => array("Bots", "SELECT COUNT(*) as found_count " . guild_search_sql('bots', $name)),
     "zones" => array("Zones", "SELECT COUNT(*) as found_count FROM `zone` WHERE `short_name` LIKE '%" . $name . "%' OR `long_name` LIKE '%" . $name . "%'"),
     "mobs" => array("Mobs", "SELECT COUNT(*) as found_count FROM `npc_types` WHERE `name` LIKE '%" . str_replace(' ', '_', $name) . "%'"),
     "items" => array("Items", "SELECT COUNT(*) as found_count FROM `items` WHERE `Name` LIKE '%" . $name . "%'"),

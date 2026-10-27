@@ -99,6 +99,24 @@ function guild_dashboard_url($path) {
     return "$scheme://$host:8766$path";
 }
 
+// class names by id (characters' and bots' class numbers)
+function guild_class_name($id) {
+    static $classes = array(1 => 'Warrior', 2 => 'Cleric', 3 => 'Paladin', 4 => 'Ranger', 5 => 'Shadow Knight', 6 => 'Druid',
+        7 => 'Monk', 8 => 'Bard', 9 => 'Rogue', 10 => 'Shaman', 11 => 'Necromancer', 12 => 'Wizard', 13 => 'Magician',
+        14 => 'Enchanter', 15 => 'Beastlord', 16 => 'Berserker');
+    return $classes[intval($id)] ?? '';
+}
+
+// the global search's characters (not GMs') and bots: SQL for the count and the list. A character links to its page
+// in the character browser, a bot to its card on its owner's page.
+function guild_search_sql($what, $name) {
+    global $guild_gm_status;
+    if ($what == 'characters') {
+        return "FROM character_data c JOIN account a ON a.id = c.account_id WHERE c.deleted_at IS NULL AND a.status < $guild_gm_status AND c.name LIKE '%$name%'";
+    }
+    return "FROM bot_data b JOIN character_data o ON o.id = b.owner_id AND o.deleted_at IS NULL JOIN account a ON a.id = o.account_id WHERE a.status < $guild_gm_status AND b.name LIKE '%$name%'";
+}
+
 // what the guild thinks an item is worth to each class that can use it: guild.item_values (puppeteer
 // docs/public/item-scores.md has the arithmetic: stats, weapon, effects and resists, weighted per class and level)
 function guild_item_scores($item_id) {
