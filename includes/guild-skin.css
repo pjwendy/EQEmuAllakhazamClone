@@ -159,3 +159,6 @@ hr { border: 0; border-top: 1px solid var(--line); }
 
 /* a page wider than the room scrolls sideways (the wrapper around the menu and page clips what overflows) */
 .page-content { overflow-x: auto; }
+
+/* the page uses the room there is (zam capped these at 1420px and 95%); the bg-wrapper's padding is the margin */
+#skin-wrap, #wrapper, #header { max-width: none !important; width: 100% !important; }
