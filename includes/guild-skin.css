@@ -26,7 +26,7 @@ body, td, th, div, span, p, li, input, select, textarea, button { font-family: I
 body { font-size: 14px !important; line-height: 1.45; }
 .zul-bar, #headjs, #skin-wrap { display: none !important; }
 body.has-zul-bar { padding-top: 0 !important; }
-#bg-wrapper { max-width: 1280px; margin: 0 auto !important; padding: 0 16px; box-sizing: border-box; }
+#bg-wrapper { max-width: none; margin: 0 auto !important; padding: 0 16px; box-sizing: border-box; }
 #wrapper, #body, #cols, #col-main, #col-main-inner, #col-main-inner-2, #col-main-inner-3 { border: 0 !important; box-shadow: none !important; }
 
 /* the header: our crest and title, the search, the theme button */
