@@ -24,5 +24,7 @@ $print_buffer .= '<li><a href=?a=zone_era&era=sod>Seeds of Destruction</a></li> 
 $print_buffer .= '<li><a href=?a=zone_era&era=uf>Underfoot</a></li>                           ';
 $print_buffer .= '<li><a href=?a=zone_era&era=hot>House of Thule</a></li>                     ';
 $print_buffer .= '<li><a href=?a=zone_era&era=voa>Veil of Alaris</a></li>                     ';
+require_once('includes/guild.php');
+$print_buffer = guild_filter_eras($print_buffer);
 $print_buffer .= '</td></tr></table>';
 ?>

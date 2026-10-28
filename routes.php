@@ -62,7 +62,10 @@ if ($route == "spells") {
 } else if ($route == "zone_era") {
     echo '<table class=\'display_table container_div\'><tr><td>';
     echo "<h2 class='section_header'>Zones</h2><br>";
-    require_once('pages/zones/zones_by_era/' . $_GET['era'] . '.php');
+    require_once('includes/guild.php');
+    ob_start();
+    require_once('pages/zones/zones_by_era/' . preg_replace('/[^a-z]/', '', $_GET['era']) . '.php');
+    echo guild_filter_zone_lines(ob_get_clean());
     echo '</td></tr></table>';
 } else {
     // the front page is the guild's home (the dashboard)

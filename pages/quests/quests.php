@@ -21,6 +21,7 @@ $where = array("1=1");
 if ($zone != '') $where[] = "q.id IN (SELECT quest_id FROM guild.quest_refs WHERE kind = 'zone' AND ref = '$zone')";
 if ($q != '') $where[] = "(q.title LIKE '%$q%' OR q.start_npc LIKE '%$q%')";
 if ($level > 0) $where[] = "q.level_min <= $level";
+$where[] = "q.zone IN (SELECT short_name FROM $zones_table)";  // (only zones this server has)
 $where = implode(" AND ", $where);
 
 $total = intval(get_field_result("n", "SELECT COUNT(*) AS n FROM guild.quests q WHERE $where"));

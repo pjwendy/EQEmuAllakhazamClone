@@ -21,10 +21,11 @@ function quests_available() {
 // the quests that touch a zone (short name), an NPC (id) or an item (id): id, title and the roles
 function quests_touching($kind, $ref, $limit = 40) {
     if (!quests_available()) return array();
+    global $zones_table;
     $kind = ($kind == 'zone' || $kind == 'npc') ? $kind : 'item';
     $ref = addslashes($ref);
     $r = db_mysql_query("SELECT q.id, q.title, GROUP_CONCAT(DISTINCT r.role) AS roles FROM guild.quest_refs r
-                         JOIN guild.quests q ON q.id = r.quest_id WHERE r.kind = '$kind' AND r.ref = '$ref'
+                         JOIN guild.quests q ON q.id = r.quest_id WHERE r.kind = '$kind' AND r.ref = '$ref' AND q.zone IN (SELECT short_name FROM $zones_table)
                          GROUP BY q.id, q.title ORDER BY q.title LIMIT " . intval($limit));
     $out = array();
     while ($r && ($row = mysqli_fetch_array($r))) $out[] = $row;

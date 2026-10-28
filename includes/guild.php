@@ -187,3 +187,72 @@ function guild_site_title($page_title = '') {
     $base = $guild !== '' ? $guild : "The Guild's Allakhazam";
     return $page_title !== '' ? $base . ' · ' . strip_tags($page_title) : $base . ' · Allakhazam';
 }
+
+// What this server has: the zones past its expansion, or only a GM may enter, don't exist as far as the guild goes
+// (puppeteer soldiers/available.py: the same two views in the guild's database, made there, by the dashboard, or here).
+// Every query through $zones_table then sees only the zones players can reach; era lists and quests are filtered by it.
+function guild_zone_views() {
+    return array(
+        "CREATE OR REPLACE VIEW guild.current_expansion AS
+         SELECT CAST(COALESCE((SELECT rule_value FROM peq.rule_values WHERE ruleset_id = 1 AND rule_name = 'Expansion:CurrentExpansion'),
+                              (SELECT rule_value FROM peq.rule_values WHERE ruleset_id = 0 AND rule_name = 'Expansion:CurrentExpansion'),
+                              '99') AS SIGNED) AS value",
+        "CREATE OR REPLACE VIEW guild.zone_active AS
+         SELECT z.* FROM peq.zone z, guild.current_expansion c
+         WHERE z.min_status = 0 AND z.expansion <= c.value
+           AND (z.min_expansion < 0 OR z.min_expansion <= c.value) AND (z.max_expansion < 0 OR z.max_expansion >= c.value)",
+    );
+}
+
+function guild_use_active_zones() {
+    global $zones_table, $database;
+    $probe = function () use ($database) {
+        try { return (bool) mysqli_query($database, "SELECT 1 FROM guild.zone_active LIMIT 1"); } catch (\Throwable $e) { return false; }
+    };
+    if (!$probe()) {
+        foreach (guild_zone_views() as $sql) {
+            try { mysqli_query($database, $sql); } catch (\Throwable $e) { return; }
+        }
+    }
+    if ($probe()) {
+        $zones_table = "guild.zone_active";
+    }
+}
+
+// the short names of the zones open to players
+function guild_active_zone_names() {
+    static $names = null;
+    if ($names === null) {
+        global $zones_table, $database;
+        $names = array();
+        try {
+            $r = mysqli_query($database, "SELECT DISTINCT short_name FROM $zones_table");
+            while ($r && ($row = mysqli_fetch_row($r))) $names[$row[0]] = true;
+        } catch (\Throwable $e) {
+            $names = array();
+        }
+    }
+    return $names;
+}
+
+// an era's page: only the zones this server has (the lists are fixed text)
+function guild_filter_zone_lines($html) {
+    $active = guild_active_zone_names();
+    if (!$active) return $html;
+    return implode("\n", array_filter(explode("\n", $html), function ($line) use ($active) {
+        return !preg_match('/\?a=zone&name=([A-Za-z0-9_]+)/', $line, $m) || isset($active[$m[1]]);
+    }));
+}
+
+// the eras with nothing left in them are dropped from the list of eras
+function guild_filter_eras($html) {
+    $active = guild_active_zone_names();
+    if (!$active) return $html;
+    return preg_replace_callback('/<li><a href=\?a=zone_era&era=([a-z]+)[^>]*>.*?<\/a><\/li>\s*/s', function ($m) use ($active) {
+        $file = 'pages/zones/zones_by_era/' . $m[1] . '.php';
+        $text = is_readable($file) ? file_get_contents($file) : '';
+        preg_match_all('/\?a=zone&name=([A-Za-z0-9_]+)/', $text, $names);
+        foreach ($names[1] as $n) if (isset($active[$n])) return $m[0];
+        return '';
+    }, $html);
+}
