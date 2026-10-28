@@ -144,6 +144,13 @@
                                                     <li><a href="?a=portal&page=reports">Daily Reports</a> </li>
                                                     <li><a href="?a=portal&page=named">Named</a> </li>
                                                     <li><a href="?a=raid_targets">Raid Targets</a> </li>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="menuh" nowrap="1">Operations...</td>
+                                            </tr>
+                                            <tr>
+                                                <td  class="menu_item">
                                                     <li><a href="?a=portal&page=incidents">Incidents</a> </li>
                                                     <li><a href="?a=portal&page=backlog">Backlog</a> </li>
                                                 </td>
