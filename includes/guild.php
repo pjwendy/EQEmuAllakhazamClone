@@ -26,7 +26,7 @@ function guild_character_link($name) {
         . htmlspecialchars($name, ENT_QUOTES) . "</a>";
 }
 
-// the guild dashboard's API from inside the stack (Allakhazam's raid targets and zone maps)
+// the guild dashboard's API from inside the stack (the Codex's raid targets and zone maps)
 function guild_dashboard_json($path) {
     $base = getenv('GUILD_DASHBOARD_URL') ?: 'http://guild-dashboard:8766';
     $raw = @file_get_contents($base . $path, false, stream_context_create(array('http' => array('timeout' => 15))));
@@ -182,10 +182,15 @@ function guild_name() {
 }
 
 // the browser tab's title: the guild's name, then the page's
-function guild_site_title($page_title = '') {
+// The portal's name: the Codex of this server's guild (Codex Intelligentia Artificialis; Bona's and Mala's on eq2 and eq3)
+function guild_portal_name() {
     $guild = guild_name();
-    $base = $guild !== '' ? $guild : "The Guild's Codex";
-    return $page_title !== '' ? $base . ' · ' . strip_tags($page_title) : $base . ' · Codex';
+    return 'Codex ' . ($guild !== '' ? $guild : 'Intelligentia Artificialis');
+}
+
+function guild_site_title($page_title = '') {
+    $base = guild_portal_name();
+    return $page_title !== '' ? $base . ' · ' . strip_tags($page_title) : $base;
 }
 
 // What this server has: the zones past its expansion, or only a GM may enter, don't exist as far as the guild goes
