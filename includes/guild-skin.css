@@ -1,4 +1,4 @@
-/* The guild's look over Allakhazam: the dashboard's colours (puppeteer guild/dashboard/style.css), Cinzel
+/* The guild's look over the Codex (our Allakhazam fork): the dashboard's colours (puppeteer guild/dashboard/style.css), Cinzel
    and Inter, light or dark (the same "theme" the dashboard keeps). Loaded last, it restyles the old site's
    own (zam_files/*.css, includes/alla.css) without changing its layout. */
 :root {
@@ -46,6 +46,7 @@ body.has-zul-bar { padding-top: 0 !important; }
 .guild-home small a { color: var(--muted) !important; }
 .guild-home small a:hover { color: var(--gold-2) !important; }
 .guild-home small { display: block; color: var(--muted) !important; font-size: 12px; }
+.guild-home span { min-width: 0; }  /* (the Codex's three words wrap on a phone rather than push the page wide) */
 .guild-theme { background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
 #global_search { position: static !important; flex: 0 1 360px; margin: 0 !important; }
 #global_search a { display: none !important; }

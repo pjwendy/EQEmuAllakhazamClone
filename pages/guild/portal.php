@@ -1,8 +1,8 @@
 <?php
 /*
- * The guild's pages inside Allakhazam: its Home (the guild dashboard: members, levels, wealth, the chronicle, keys and
+ * The guild's pages inside the Codex (the portal: guild_portal_name()): its Home (the guild dashboard: members, levels, wealth, the chronicle, keys and
  * flags), the Daily Reports, Upgrades and Named, and one character's page, upgrades and live map (name=). They're the
- * dashboard's and the runner's own pages, framed so Allakhazam's menu stays.
+ * dashboard's and the runner's own pages, framed so the Codex's menu stays.
  */
 require_once('includes/guild.php');
 
