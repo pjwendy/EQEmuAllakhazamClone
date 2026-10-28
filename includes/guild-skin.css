@@ -156,3 +156,6 @@ hr { border: 0; border-top: 1px solid var(--line); }
   #global_search { flex: 1 1 100%; }
   #col-main-inner-3 { padding-left: 0 !important; padding-right: 0 !important; }
 }
+
+/* a page wider than the room scrolls sideways (the wrapper around the menu and page clips what overflows) */
+.page-content { overflow-x: auto; }
