@@ -36,6 +36,7 @@ while ($res = mysqli_fetch_array($result)) {
     $zones[$cpt]["longname"] = $res["long_name"];
     $zones[$cpt]["npcs"] = 0;
     $zones[$cpt]["val"] = 0;
+    $zones[$cpt]["sum"] = 0;
     $query = "SELECT $npc_types_table.level
           FROM $npc_types_table,$spawn2_table,$spawn_entry_table
           WHERE $spawn2_table.zone='" . $res["short_name"] . "'
@@ -51,6 +52,7 @@ while ($res = mysqli_fetch_array($result)) {
         $lvl = floor($row["level"] / 5);
         $zones[$cpt][$lvl]++;
         $zones[$cpt]["npcs"]++;
+        $zones[$cpt]["sum"] += $row["level"];
     }
     $cpt++;
 }
@@ -68,7 +70,8 @@ if ($sort_zone_level_list == TRUE) {
                 }
             }
             if ($nb == 0) {
-                $zones[$i]["val"] = 999;
+                // no five-level band holds enough creatures to count (a zone of a few of each): the plain average of them all
+                $zones[$i]["val"] = $zones[$i]["sum"] / $zones[$i]["npcs"];
             } else {
                 $zones[$i]["val"] = $zones[$i]["val"] / $nb;
             }
