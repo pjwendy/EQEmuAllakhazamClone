@@ -7,6 +7,7 @@
     $images_url = "images/";
     require_once($includes_dir . 'mysql.php');
     require_once('includes/guild.php');
+    guild_use_active_items();  // (and no item only the closed zones give)
     guild_use_active_zones();  // (what this server has: no zone past its expansion, none a GM only may enter)
     require_once($includes_dir . 'functions.php');
 

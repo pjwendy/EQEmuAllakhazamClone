@@ -256,3 +256,23 @@ function guild_filter_eras($html) {
         return '';
     }, $html);
 }
+
+// Items follow their zones: one that only the closed zones' NPCs give, and nothing in the open ones, is on
+// guild.item_hidden (puppeteer soldiers/available.py works the list out) and isn't here: $items_table is a view without them.
+function guild_use_active_items() {
+    global $items_table, $database;
+    $probe = function () use ($database) {
+        try { return (bool) mysqli_query($database, "SELECT 1 FROM guild.item_active LIMIT 1"); } catch (\Throwable $e) { return false; }
+    };
+    if (!$probe()) {
+        try {
+            mysqli_query($database, "CREATE TABLE IF NOT EXISTS guild.item_hidden (item_id INT UNSIGNED PRIMARY KEY, built DOUBLE)");
+            mysqli_query($database, "CREATE OR REPLACE VIEW guild.item_active AS SELECT i.* FROM peq.items i LEFT JOIN guild.item_hidden h ON h.item_id = i.id WHERE h.item_id IS NULL");
+        } catch (\Throwable $e) {
+            return;
+        }
+    }
+    if ($probe()) {
+        $items_table = "guild.item_active";
+    }
+}
