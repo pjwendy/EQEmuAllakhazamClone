@@ -1,4 +1,4 @@
-/* The guild's look over Allakhazam: the dashboard's colours (puppeteer guild/dashboard/style.css), Cinzel
+/* The guild's look over the Codex (Codex Intelligentia Artificialis, once Allakhazam): the dashboard's colours (puppeteer guild/dashboard/style.css), Cinzel
    and Inter, light or dark (the same "theme" the dashboard keeps). Loaded last, it restyles the old site's
    own (zam_files/*.css, includes/alla.css) without changing its layout. */
 :root {

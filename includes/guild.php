@@ -184,8 +184,8 @@ function guild_name() {
 // the browser tab's title: the guild's name, then the page's
 function guild_site_title($page_title = '') {
     $guild = guild_name();
-    $base = $guild !== '' ? $guild : "The Guild's Allakhazam";
-    return $page_title !== '' ? $base . ' · ' . strip_tags($page_title) : $base . ' · Allakhazam';
+    $base = $guild !== '' ? $guild : "The Guild's Codex";
+    return $page_title !== '' ? $base . ' · ' . strip_tags($page_title) : $base . ' · Codex';
 }
 
 // What this server has: the zones past its expansion, or only a GM may enter, don't exist as far as the guild goes

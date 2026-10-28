@@ -78,10 +78,10 @@
     <div id="skin-wrap"></div>
     <div id="header">
         <div id="logo" class="guild-logo">
-            <div class="guild-home" title="Allakhazam: items, spells, NPCs and zones">
+            <div class="guild-home" title="Codex Intelligentia Artificialis: items, spells, NPCs and zones">
                 <a href="?" class="guild-mark" title="The guild's home">
                 <img src="<?php echo htmlspecialchars(guild_dashboard_url('/logo.jpg'), ENT_QUOTES); ?>" alt="" width="56" height="56" class="guild-logo-img"></a>
-                <span><a href="?" class="guild-title"><b>Allakhazam</b></a><small><a href="?a=items">items</a> · <a href="?a=spells">spells</a> · <a href="?a=npcs">NPCs</a> · <a href="?a=zonelist">zones</a></small></span>
+                <span><a href="?" class="guild-title"><b>Codex Intelligentia Artificialis</b></a><small><a href="?a=items">items</a> · <a href="?a=spells">spells</a> · <a href="?a=npcs">NPCs</a> · <a href="?a=zonelist">zones</a></small></span>
             </div>
             <button type="button" class="guild-menu" id="guild-menu" title="The menu">&#9776; Menu</button>
             <button type="button" class="guild-theme" id="guild-theme" title="Light or dark">&#9680;</button>
