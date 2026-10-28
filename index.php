@@ -204,21 +204,9 @@
                                             </tr>
                                             <tr>
                                                 <td  class="menu_item">
-                                                    <li><a href="?a=npcs">NPC Search</a>
-                                                    </li>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td  class="menu_item">
-                                                    <li><a href="?a=advanced_npcs">Advanced NPC
-                                                            Search</a>
-                                                    </li>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td  class="menu_item">
-                                                    <li><a href="?a=pets">Pets</a>
-                                                    </li>
+                                                    <li><a href="?a=npcs">NPC Search</a> </li>
+                                                    <li><a href="?a=advanced_npcs">Advanced NPC Search</a> </li>
+                                                    <li><a href="?a=pets">Pets</a> </li>
                                                 </td>
                                             </tr>
                                             <tr>

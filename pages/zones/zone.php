@@ -44,7 +44,7 @@ if (quests_available()) {
 if ($allow_quests_npc == TRUE) {
     $resources_menu .= "<li><a href=$root_url" . "quests/zones.php?aZone=$name>" . $zone["long_name"] . " Quest NPCs</a>";
 }
-$resources_menu .= '</ul';
+$resources_menu .= '</ul>';
 
 
 $print_buffer .= '<table class="display_table container_div"><tr><td>';
