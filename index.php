@@ -83,6 +83,7 @@
                 <img src="<?php echo htmlspecialchars(guild_dashboard_url('/logo.jpg'), ENT_QUOTES); ?>" alt="" width="56" height="56" class="guild-logo-img"></a>
                 <span><a href="?" class="guild-title"><b>Allakhazam</b></a><small><a href="?a=items">items</a> · <a href="?a=spells">spells</a> · <a href="?a=npcs">NPCs</a> · <a href="?a=zonelist">zones</a></small></span>
             </div>
+            <button type="button" class="guild-menu" id="guild-menu" title="The menu">&#9776; Menu</button>
             <button type="button" class="guild-theme" id="guild-theme" title="Light or dark">&#9680;</button>
         </div>
 
@@ -305,6 +306,11 @@
         <script src="includes/js/datatables/media/js/jquery.dataTables.min.js"></script>
         <script type="text/javascript">
             Nav.init()
+            // phones: the menu is above the page, closed until asked for (and closed again when something in it is chosen)
+            document.getElementById("guild-menu").onclick = function () { document.body.classList.toggle("menu-open"); };
+            document.querySelector(".side_menu").addEventListener("click", function (e) {
+                if (e.target.closest("a")) document.body.classList.remove("menu-open");
+            });
             document.getElementById("guild-theme").onclick = function () {
                 var now = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
                 document.documentElement.setAttribute("data-theme", now);

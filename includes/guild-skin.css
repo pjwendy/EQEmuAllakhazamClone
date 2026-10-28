@@ -41,7 +41,7 @@ body.has-zul-bar { padding-top: 0 !important; }
 #logo.guild-logo a { display: inline !important; height: auto !important; width: auto !important; background: none !important; }
 #logo.guild-logo a.guild-mark { display: inline-flex !important; }
 #logo.guild-logo a.guild-title { display: block !important; }
-.guild-logo-img { width: 56px !important; height: 56px !important; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold); box-shadow: var(--shadow); display: block; }
+.guild-logo-img { width: clamp(84px, 16vw, 112px) !important; height: clamp(84px, 16vw, 112px) !important; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold); box-shadow: var(--shadow); display: block; }
 .guild-home a { color: inherit; text-decoration: none !important; }
 .guild-home small a { color: var(--muted) !important; }
 .guild-home small a:hover { color: var(--gold-2) !important; }
@@ -140,6 +140,19 @@ font[color] { color: inherit !important; }
 hr { border: 0; border-top: 1px solid var(--line); }
 .copyright { color: var(--muted) !important; text-align: center; padding: 18px 0 30px; }
 
+.guild-menu { display: none; background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+/* phones and narrow windows: the menu goes above the page (closed until asked for) and the page takes the whole width:
+   zam's layout keeps the menu 200px wide at the left and the page 220px in, and a 970px minimum width */
 @media (max-width: 860px) {
-  .side_menu { display: block !important; float: none !important; width: 100% !important; }
+  #skin-wrap, #wrapper, #header { min-width: 0 !important; width: 100% !important; }
+  #bg-wrapper { padding: 0 10px; }
+  .guild-menu { display: inline-block; }
+  .side_menu { display: none !important; float: none !important; width: 100% !important; margin-bottom: 10px; }
+  body.menu-open .side_menu { display: block !important; }
+  .side_menu table { width: 100% !important; }
+  .page-content { margin-left: 0 !important; }
+  .page-content table.display_table { width: 100% !important; max-width: 100%; }
+  .display_table td, .display_table th { word-break: break-word; }
+  #global_search { flex: 1 1 100%; }
+  #col-main-inner-3 { padding-left: 0 !important; padding-right: 0 !important; }
 }
