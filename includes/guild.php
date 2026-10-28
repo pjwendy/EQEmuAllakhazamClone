@@ -199,7 +199,7 @@ function guild_zone_views() {
                               '99') AS SIGNED) AS value",
         "CREATE OR REPLACE VIEW guild.zone_active AS
          SELECT z.* FROM peq.zone z, guild.current_expansion c
-         WHERE z.min_status = 0 AND (z.expansion <= c.value OR z.bypass_expansion_check = 1)
+         WHERE z.min_status = 0 AND (z.expansion <= c.value)
            AND (z.min_expansion < 0 OR z.min_expansion <= c.value) AND (z.max_expansion < 0 OR z.max_expansion >= c.value)",
     );
 }
