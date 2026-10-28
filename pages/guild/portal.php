@@ -15,6 +15,7 @@ $portal = array(
     'incidents' => array("Incidents", "/incidents"),
     'backlog' => array("Backlog", "/backlog"),
     'spending' => array("Spending", "/spending"),
+    'recordings' => array("Recordings", "/recordings"),
     'docs'     => array("Docs", "/docs"),
     'character' => array("Character", "/character"),
     'map'      => array("Map", ""),
