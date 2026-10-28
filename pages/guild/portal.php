@@ -13,6 +13,7 @@ $portal = array(
     'named'    => array("Named", "/named"),
     'releases' => array("Releases", "/releases"),
     'incidents' => array("Incidents", "/incidents"),
+    'backlog' => array("Backlog", "/backlog"),
     'docs'     => array("Docs", "/docs"),
     'character' => array("Character", "/character"),
     'map'      => array("Map", ""),
