@@ -150,6 +150,7 @@
                                                     <li><a href="?a=portal&page=reports">Daily Reports</a> </li>
                                                     <li><a href="?a=portal&page=named">Named</a> </li>
                                                     <li><a href="?a=raid_targets">Raid Targets</a> </li>
+                                                    <li><a href="?a=portal&page=incidents">Incidents</a> </li>
                                                 </td>
                                             </tr>
                                             <tr>
@@ -162,6 +163,7 @@
                                                     <li><a href="?a=portal&page=docs&doc=server-changes">Our server fork</a> </li>
                                                     <li><a href="?a=portal&page=docs&doc=headless-server">Running the headless server</a> </li>
                                                     <li><a href="?a=portal&page=docs&doc=headless-api">Headless bot API</a> </li>
+                                                    <li><a href="?a=portal&page=docs&doc=how-we-play">How we play (our AI layer)</a> </li>
                                                 </td>
                                             </tr>
                                             <tr>
