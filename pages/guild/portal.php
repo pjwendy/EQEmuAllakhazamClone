@@ -50,7 +50,7 @@ if ($fixed) {
         .page-content { margin-right: 0 !important; }</style>";
 }
 $print_buffer .= "<iframe id='guild-frame' src='$src' title='" . htmlspecialchars($page_title, ENT_QUOTES)
-    . "' style='border:0;width:100%;height:" . ($fixed ? "calc(100vh - 200px);min-height:520px" : "900px") . ";display:block' scrolling='no'></iframe>
+    . "' style='border:0;width:100%;height:" . ($fixed ? "calc(100vh - 135px);min-height:520px" : "900px") . ";display:block' scrolling='no'></iframe>
 " . ($fixed ? "" : "<script>
 (function () {
     // the page is the same site behind the proxy: its height is readable, so the frame fits it and the page scrolls once
