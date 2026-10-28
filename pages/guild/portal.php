@@ -16,6 +16,7 @@ $portal = array(
     'backlog' => array("Backlog", "/backlog"),
     'spending' => array("Spending", "/spending"),
     'recordings' => array("Recordings", "/recordings"),
+    'player'   => array("Recording", "/recordings/play"),
     'docs'     => array("Docs", "/docs"),
     'character' => array("Character", "/character"),
     'map'      => array("Map", ""),
@@ -25,6 +26,9 @@ $page_title = $portal[$which][0];
 $path = $portal[$which][1];
 if ($which == 'docs' && isset($_GET['doc']) && preg_match('/^[a-z0-9-]+$/', $_GET['doc'])) {
     $path .= '/' . $_GET['doc'];  // one document (how items are scored, the headless API)
+}
+if ($which == 'player' && isset($_GET['id']) && ctype_digit($_GET['id'])) {
+    $path .= '/' . $_GET['id'];  // one recording, in the player
 }
 $name = isset($_GET['name']) && preg_match('/^[A-Za-z]{2,64}$/', $_GET['name']) ? $_GET['name']
     : (isset($_GET['c']) && preg_match('/^[A-Za-z]{2,64}$/', $_GET['c']) ? $_GET['c'] : '');
