@@ -41,6 +41,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title><?php echo htmlspecialchars(guild_site_title($page_title ?? '')); ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="<?php echo htmlspecialchars(guild_dashboard_url('/logo.jpg'), ENT_QUOTES); ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -79,10 +80,7 @@
         <div id="logo" class="guild-logo">
             <div class="guild-home" title="Allakhazam: items, spells, NPCs and zones">
                 <a href="?" class="guild-mark" title="The guild's home">
-                <svg width="44" height="44" viewBox="0 0 64 64" aria-hidden="true">
-                    <path d="M32 3 56 12v18c0 15-10 26-24 31C18 56 8 45 8 30V12z" fill="none" stroke="var(--gold)" stroke-width="3"/>
-                    <path d="M22 22h20M22 32h20M22 42h12" stroke="var(--gold-2)" stroke-width="3" stroke-linecap="round"/>
-                </svg></a>
+                <img src="<?php echo htmlspecialchars(guild_dashboard_url('/logo.jpg'), ENT_QUOTES); ?>" alt="" width="56" height="56" class="guild-logo-img"></a>
                 <span><a href="?" class="guild-title"><b>Allakhazam</b></a><small><a href="?a=items">items</a> · <a href="?a=spells">spells</a> · <a href="?a=npcs">NPCs</a> · <a href="?a=zonelist">zones</a></small></span>
             </div>
             <button type="button" class="guild-theme" id="guild-theme" title="Light or dark">&#9680;</button>
