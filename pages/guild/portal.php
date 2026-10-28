@@ -50,18 +50,31 @@ if ($fixed) {
         .page-content { margin-right: 0 !important; }</style>";
 }
 $print_buffer .= "<iframe id='guild-frame' src='$src' title='" . htmlspecialchars($page_title, ENT_QUOTES)
-    . "' style='border:0;width:100%;height:" . ($fixed ? "calc(100vh - 135px);min-height:520px" : "900px") . ";display:block' scrolling='no'></iframe>
-" . ($fixed ? "" : "<script>
+    . "' style='border:0;width:100%;height:" . ($fixed ? "calc(100vh - 135px)" : "900px") . ";min-height:520px;display:block' scrolling='no'></iframe>
+<script>
 (function () {
-    // the page is the same site behind the proxy: its height is readable, so the frame fits it and the page scrolls once
-    var f = document.getElementById('guild-frame'), timer = null;
+    // the frame runs down at least as far as the menu on the left (the map's, or the log and chat's, bottom lines up with it);
+    // a map fills the window below the banner; the other pages are the height of their own page
+    var f = document.getElementById('guild-frame'), timer = null, fixed = " . ($fixed ? "true" : "false") . ";
+    function menuBottom() {
+        var m = document.querySelector('.side_menu');
+        return m && m.offsetParent !== null ? m.getBoundingClientRect().bottom + window.pageYOffset : 0;
+    }
+    function size(content) {
+        var top = f.getBoundingClientRect().top + window.pageYOffset;
+        var want = fixed ? window.innerHeight - f.getBoundingClientRect().top - 8 : content;
+        f.style.height = Math.max(want, menuBottom() - top, 520) + 'px';
+    }
     function fit() {
-        if (!document.body.contains(f)) { clearInterval(timer); return; }
+        if (!document.body.contains(f)) { clearInterval(timer); window.removeEventListener('resize', fit); return; }
+        if (fixed) { size(0); return; }
         try {
             var d = f.contentDocument;
-            if (d && d.documentElement) f.style.height = Math.max(400, d.documentElement.scrollHeight) + 'px';
+            if (d && d.documentElement) size(d.documentElement.scrollHeight);
         } catch (e) { f.style.height = '1600px'; f.scrolling = 'yes'; }
     }
+    window.addEventListener('resize', fit);
     f.addEventListener('load', function () { fit(); clearInterval(timer); timer = setInterval(fit, 700); });
+    fit();
 })();
-</script>");
+</script>";
