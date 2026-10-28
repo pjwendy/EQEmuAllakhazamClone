@@ -122,14 +122,8 @@
                                             </tr>
                                             <tr>
                                                 <td nowrap="1" class="menu_item">
-                                                    <li><a href="?">Home</a>
-                                                    </li>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td  class="menu_item">
-                                                    <li><a href="http://www.eqemulator.org">EQEmulator</a>
-                                                    </li>
+                                                    <li><a href="?">Guild Home</a> </li>
+                                                    <li><a href="http://www.eqemulator.org">EQEmulator</a> </li>
                                                 </td>
                                             </tr>
                                             <tr>
