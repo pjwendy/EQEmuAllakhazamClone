@@ -116,6 +116,14 @@ function npc_dress($npc) {
     return implode(',', $w);
 }
 
+// what an NPC holds: its primary and secondary weapon models (d_melee_texture1 and 2 are the item model numbers: IT<n>)
+function npc_held($npc) {
+    $h = array();
+    if (intval($npc['d_melee_texture1'] ?? 0) > 0) { $h[] = "r:IT" . intval($npc['d_melee_texture1']); }
+    if (intval($npc['d_melee_texture2'] ?? 0) > 0) { $h[] = "l:IT" . intval($npc['d_melee_texture2']); }
+    return implode(',', $h);
+}
+
 $npc_data = '
     <table border="0" width="100%">
         <tbody>
@@ -137,7 +145,7 @@ $npc_data = '
             <tr>
                 <td style="text-align:right"><b>Model</b>
                 </td>
-                <td><iframe src="' . htmlspecialchars(guild_dashboard_url("/model?race=" . intval($npc["race"]) . "&gender=" . intval($npc["gender"]) . "&w=" . npc_dress($npc)), ENT_QUOTES) . '" title="Model" style="border:0;width:100%;max-width:360px;height:300px;display:block"></iframe></td>
+                <td><iframe src="' . htmlspecialchars(guild_dashboard_url("/model?race=" . intval($npc["race"]) . "&gender=" . intval($npc["gender"]) . "&w=" . npc_dress($npc) . "&h=" . npc_held($npc)), ENT_QUOTES) . '" title="Model" style="border:0;width:100%;max-width:360px;height:300px;display:block"></iframe></td>
             </tr>
             <tr>
                 <td style="text-align:right"><b>Class</b>
