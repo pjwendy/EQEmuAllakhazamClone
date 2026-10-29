@@ -123,6 +123,11 @@ $npc_data = '
                 <td>' . $dbiracenames[$npc["race"]]  .'</td>
             </tr>
             <tr>
+                <td style="text-align:right"><b>Model</b>
+                </td>
+                <td><iframe src="' . htmlspecialchars(guild_dashboard_url("/model?race=" . intval($npc["race"]) . "&gender=" . intval($npc["gender"])), ENT_QUOTES) . '" title="Model" style="border:0;width:100%;max-width:360px;height:300px;display:block"></iframe></td>
+            </tr>
+            <tr>
                 <td style="text-align:right"><b>Class</b>
                 </td>
                 <td>' . $dbclasses[$npc["class"]] . '</td>
