@@ -104,6 +104,18 @@ if ($show_npcs_attack_speed == TRUE) {
 
 $print_buffer .= "</td></tr></table>";
 
+// what an NPC wears: the material of each body part (npc_types' texture for the chest, then helm, arm, bracer, hand, leg and feet; 0 and 255 are the model's own)
+function npc_dress($npc) {
+    $w = array();
+    foreach (array('ch' => 'texture', 'he' => 'helmtexture', 'ua' => 'armtexture', 'fa' => 'bracertexture', 'hn' => 'handtexture', 'lg' => 'legtexture', 'ft' => 'feettexture') as $part => $col) {
+        $m = intval($npc[$col] ?? 0);
+        if ($m > 0 && $m < 100) {
+            $w[] = "$part:$m:0";
+        }
+    }
+    return implode(',', $w);
+}
+
 $npc_data = '
     <table border="0" width="100%">
         <tbody>
@@ -125,7 +137,7 @@ $npc_data = '
             <tr>
                 <td style="text-align:right"><b>Model</b>
                 </td>
-                <td><iframe src="' . htmlspecialchars(guild_dashboard_url("/model?race=" . intval($npc["race"]) . "&gender=" . intval($npc["gender"])), ENT_QUOTES) . '" title="Model" style="border:0;width:100%;max-width:360px;height:300px;display:block"></iframe></td>
+                <td><iframe src="' . htmlspecialchars(guild_dashboard_url("/model?race=" . intval($npc["race"]) . "&gender=" . intval($npc["gender"]) . "&w=" . npc_dress($npc)), ENT_QUOTES) . '" title="Model" style="border:0;width:100%;max-width:360px;height:300px;display:block"></iframe></td>
             </tr>
             <tr>
                 <td style="text-align:right"><b>Class</b>
