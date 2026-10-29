@@ -80,7 +80,7 @@ $print_buffer .= "
         </tr>
         <tr valign='top'>
             <td colspan='2'>
-                <iframe src='" . htmlspecialchars(guild_dashboard_url("/model?race=" . intval($npc["race"]) . "&gender=" . intval($npc["gender"]) . "&w=" . npc_dress($npc) . "&h=" . npc_held($npc)), ENT_QUOTES) . "' title='Model' style='border:0;width:100%;max-width:440px;height:440px;display:block;margin:0 0 12px'></iframe>
+                <iframe src='" . htmlspecialchars(guild_dashboard_url("/model?race=" . intval($npc["race"]) . "&gender=" . intval($npc["gender"]) . "&w=" . npc_dress($npc) . "&h=" . npc_held($npc)), ENT_QUOTES) . "' title='Model' style='border:1px solid #d9cfb8;border-radius:10px;width:100%;max-width:380px;height:420px;display:block;margin:0 0 14px;background:rgba(255,255,255,.35)'></iframe>
             </td>
         </tr>
 ";
