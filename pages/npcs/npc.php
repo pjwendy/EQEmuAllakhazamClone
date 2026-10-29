@@ -78,11 +78,6 @@ $print_buffer .= "
                 <h1>" . get_npc_name_human_readable($npc["name"]) . "</h1>
             </td>
         </tr>
-        <tr valign='top'>
-            <td colspan='2'>
-                <iframe src='" . htmlspecialchars(guild_dashboard_url("/model?race=" . intval($npc["race"]) . "&gender=" . intval($npc["gender"]) . "&w=" . npc_dress($npc) . "&h=" . npc_held($npc)), ENT_QUOTES) . "' title='Model' style='border:1px solid #d9cfb8;border-radius:10px;width:100%;max-width:380px;height:420px;display:block;margin:0 0 14px;background:rgba(255,255,255,.35)'></iframe>
-            </td>
-        </tr>
 ";
 $print_buffer .= "
     <tr valign='top'>
@@ -328,6 +323,8 @@ $print_buffer .= "</tr></table>";
 
 $print_buffer .= "</td><td valign='top'><table class='display_table container_div'>"; // right column height='100%'
 $print_buffer .= "<tr><td>"; // image
+// the model, the same card for every NPC, above where it spawns
+$print_buffer .= "<iframe src='" . htmlspecialchars(guild_dashboard_url("/model?race=" . intval($npc["race"]) . "&gender=" . intval($npc["gender"]) . "&w=" . npc_dress($npc) . "&h=" . npc_held($npc)), ENT_QUOTES) . "' title='Model' style='border:1px solid #d9cfb8;border-radius:10px;width:100%;min-width:300px;height:400px;display:block;margin:0 0 14px;background:rgba(255,255,255,.35)'></iframe>";
 if ($UseWikiImages) {
     $ImageFile = NpcImage($wiki_server_url, $wiki_root_name, $id);
     if ($ImageFile == "") {
