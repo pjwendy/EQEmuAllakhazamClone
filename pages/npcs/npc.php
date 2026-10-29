@@ -78,6 +78,11 @@ $print_buffer .= "
                 <h1>" . get_npc_name_human_readable($npc["name"]) . "</h1>
             </td>
         </tr>
+        <tr valign='top'>
+            <td colspan='2'>
+                <iframe src='" . htmlspecialchars(guild_dashboard_url("/model?race=" . intval($npc["race"]) . "&gender=" . intval($npc["gender"]) . "&w=" . npc_dress($npc) . "&h=" . npc_held($npc)), ENT_QUOTES) . "' title='Model' style='border:0;width:100%;max-width:440px;height:440px;display:block;margin:0 0 12px'></iframe>
+            </td>
+        </tr>
 ";
 $print_buffer .= "
     <tr valign='top'>
@@ -141,11 +146,6 @@ $npc_data = '
                 <td style="text-align:right"><b>Race</b>
                 </td>
                 <td>' . $dbiracenames[$npc["race"]]  .'</td>
-            </tr>
-            <tr>
-                <td style="text-align:right"><b>Model</b>
-                </td>
-                <td><iframe src="' . htmlspecialchars(guild_dashboard_url("/model?race=" . intval($npc["race"]) . "&gender=" . intval($npc["gender"]) . "&w=" . npc_dress($npc) . "&h=" . npc_held($npc)), ENT_QUOTES) . '" title="Model" style="border:0;width:100%;max-width:360px;height:300px;display:block"></iframe></td>
             </tr>
             <tr>
                 <td style="text-align:right"><b>Class</b>
