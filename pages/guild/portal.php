@@ -37,6 +37,9 @@ $name = isset($_GET['name']) && preg_match('/^[A-Za-z]{2,64}$/', $_GET['name']) 
 $fixed = false;  // a frame of the viewport's height (a map is a canvas: it has no height of its own to fit)
 if ($name !== '' && in_array($which, array('character', 'upgrades'), true)) {
     $path = ($which == 'upgrades' ? "/upgrades/" : "/character/") . rawurlencode($name);
+    if ($which == 'character' && isset($_GET['bot']) && preg_match('/^[A-Za-z]{2,64}$/', $_GET['bot'])) {
+        $path .= '#' . $_GET['bot'];  // (a bot's chip on the guild home: the owner's profile, at that bot)
+    }
     $page_title = $name . ($which == 'upgrades' ? "'s upgrades" : "");
 } elseif ($which == 'map' || $which == '3d') {
     $page_title = $name !== '' ? "$name's " . ($which == 'map' ? "map" : "3D view") : $portal[$which][0];
