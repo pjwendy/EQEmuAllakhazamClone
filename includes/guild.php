@@ -95,7 +95,7 @@ $guild_page_style = "<style>
 function guild_player_header($name, $which) {
     $q = rawurlencode($name);
     $online = $name !== '' && guild_map_url($name) !== '';
-    $what = array('map' => '2D map', '3d' => '3D view', 'character' => 'Profile', 'upgrades' => 'Upgrades');
+    $what = array('map' => '2D map', '3d' => '3D view', 'history' => 'History', 'corpses' => 'Corpses', 'character' => 'Profile', 'upgrades' => 'Upgrades');
     $btn = function ($page, $label, $cls, $on, $title) use ($q, $which) {
         $cur = $which == $page ? ' cur' : '';
         return $on ? "<a class='ph-btn $cls$cur' href='?a=portal&amp;page=$page&amp;name=$q' title='$title'>$label</a>"
@@ -108,11 +108,14 @@ function guild_player_header($name, $which) {
     border: 2px solid transparent; }
   .ph-btn:hover { filter: brightness(1.12); } .ph-btn.cur { border-color: currentColor; box-shadow: 0 0 0 2px rgba(0,0,0,.25) inset; }
   .ph-map { background: #d8a94a; } .ph-3d { background: #b48ce0; } .ph-profile { background: #6fa8dc; } .ph-upgrades { background: #6fbf73; }
+  .ph-history { background: #e08a3c; } .ph-corpses { background: #c9c2b4; }
   .ph-btn.off { opacity: .4; cursor: default; filter: none; }
   .ph-name { font: 700 18px Cinzel, Georgia, serif; margin-left: 6px; } .ph-what { opacity: .7; font-size: 15px; }
 </style><div class='ph'>"
         . $btn('map', '2D', 'ph-map', $online, htmlspecialchars($name, ENT_QUOTES) . "'s live map")
         . $btn('3d', '3D', 'ph-3d', $online, htmlspecialchars($name, ENT_QUOTES) . " in 3D, as the game draws it")
+        . $btn('history', 'History', 'ph-history', true, "Where it has been and why: its trail, the last 24 hours, to replay")
+        . $btn('corpses', 'Corpses', 'ph-corpses', true, "Its corpses, and what lies on each")
         . $btn('character', 'Profile', 'ph-profile', true, "Its gear, bags, bank and bots")
         . $btn('upgrades', 'Upgrades', 'ph-upgrades', true, "Where its upgrades drop, and what the General will choose")
         . "<span class='ph-name'>" . htmlspecialchars($name) . "</span><span class='ph-what'>&middot; " . $what[$which] . "</span></div>";

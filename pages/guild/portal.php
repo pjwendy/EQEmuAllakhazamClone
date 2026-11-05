@@ -22,6 +22,8 @@ $portal = array(
     'character' => array("Character", "/character"),
     'map'      => array("Map", ""),
     '3d'       => array("3D", ""),
+    'history'  => array("History", "/trail"),
+    'corpses'  => array("Corpses", "/corpses"),
 );
 $which = isset($_GET['page']) && isset($portal[$_GET['page']]) ? $_GET['page'] : 'home';
 $page_title = $portal[$which][0];
@@ -35,7 +37,12 @@ if ($which == 'player' && isset($_GET['id']) && ctype_digit($_GET['id'])) {
 $name = isset($_GET['name']) && preg_match('/^[A-Za-z]{2,64}$/', $_GET['name']) ? $_GET['name']
     : (isset($_GET['c']) && preg_match('/^[A-Za-z]{2,64}$/', $_GET['c']) ? $_GET['c'] : '');
 $fixed = false;  // a frame of the viewport's height (a map is a canvas: it has no height of its own to fit)
-if ($name !== '' && in_array($which, array('character', 'upgrades'), true)) {
+if ($name !== '' && in_array($which, array('history', 'corpses'), true)) {
+    // where the character has been (the trail, the last 24 hours, to replay) and what lies on its corpses
+    $day = isset($_GET['date']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $_GET['date']) ? $_GET['date'] : 'last24';  // (a day: from the daily report)
+    $path = $which == 'history' ? '/trail?leader=' . rawurlencode($name) . '&date=' . $day : '/corpses/' . rawurlencode($name);
+    $page_title = $name . ($which == 'history' ? "'s history" : "'s corpses");
+} elseif ($name !== '' && in_array($which, array('character', 'upgrades'), true)) {
     $path = ($which == 'upgrades' ? "/upgrades/" : "/character/") . rawurlencode($name);
     if ($which == 'character' && isset($_GET['bot']) && preg_match('/^[A-Za-z]{2,64}$/', $_GET['bot'])) {
         $path .= '#' . $_GET['bot'];  // (a bot's chip on the guild home: the owner's profile, at that bot)
@@ -60,7 +67,7 @@ if ($name !== '' && in_array($which, array('character', 'upgrades'), true)) {
 $src = htmlspecialchars(in_array($which, array('map', '3d'), true) ? $path : guild_dashboard_url($path), ENT_QUOTES);
 // one character's map, 3D view, profile or upgrades: the same header over each (the operator, 5 Nov), and the framed page leaves its own
 // Map, Profile and Upgrades buttons out (it knows it's in here by the frame's name: codex:<the portal's address>)
-$player = $name !== '' && in_array($which, array('map', '3d', 'character', 'upgrades'), true);
+$player = $name !== '' && in_array($which, array('map', '3d', 'history', 'corpses', 'character', 'upgrades'), true);
 if ($player) {
     $print_buffer .= guild_player_header($name, $which);
 }
