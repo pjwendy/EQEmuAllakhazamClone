@@ -67,16 +67,17 @@ if ($fixed) {
     $print_buffer .= "<style>#bg-wrapper { max-width: none !important; } #col-main-inner-3 { padding-left: 0 !important; padding-right: 0 !important; }
         .page-content { margin-right: 0 !important; }</style>";
 }
-$print_buffer .= "<iframe id='guild-frame' data-src='$src' title='" . htmlspecialchars($page_title, ENT_QUOTES)
+// the frame's name: codex:<the portal's address>, which the pages in it read (and keep as they move on) to send a character's Map, Profile
+// and Upgrades here; through the proxy they are on the portal's own address, so none ("codex:": their links are relative)
+$codex = !empty($_SERVER['HTTP_X_FORWARDED_HOST']) ? ''
+    : (((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost'));
+$print_buffer .= "<iframe id='guild-frame' name='" . htmlspecialchars('codex:' . $codex, ENT_QUOTES) . "' src='$src' title='" . htmlspecialchars($page_title, ENT_QUOTES)
     . "' style='border:0;width:100%;height:" . ($fixed ? "calc(100vh - 135px)" : "900px") . ";min-height:520px;display:block' scrolling='no'></iframe>
 <script>
 (function () {
     // the frame runs down at least as far as the menu on the left (the map's, or the log and chat's, bottom lines up with it);
     // a map fills the window below the banner; the other pages are the height of their own page
     var f = document.getElementById('guild-frame'), timer = null, fixed = " . ($fixed ? "true" : "false") . ";
-    // (named before it loads: the pages in it read their window's name, which stays theirs as they move on, to send their links here)
-    f.name = 'codex:' + location.origin;
-    f.src = f.getAttribute('data-src');
     function menuBottom() {
         var m = document.querySelector('.side_menu');
         return m && m.offsetParent !== null ? m.getBoundingClientRect().bottom + window.pageYOffset : 0;
