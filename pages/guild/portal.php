@@ -21,6 +21,7 @@ $portal = array(
     'docs'     => array("Docs", "/docs"),
     'character' => array("Character", "/character"),
     'map'      => array("Map", ""),
+    '3d'       => array("3D", ""),
 );
 $which = isset($_GET['page']) && isset($portal[$_GET['page']]) ? $_GET['page'] : 'home';
 $page_title = $portal[$which][0];
@@ -37,34 +38,45 @@ $fixed = false;  // a frame of the viewport's height (a map is a canvas: it has 
 if ($name !== '' && in_array($which, array('character', 'upgrades'), true)) {
     $path = ($which == 'upgrades' ? "/upgrades/" : "/character/") . rawurlencode($name);
     $page_title = $name . ($which == 'upgrades' ? "'s upgrades" : "");
-} elseif ($which == 'map') {
-    $page_title = $name !== '' ? "$name's map" : "Map";
+} elseif ($which == 'map' || $which == '3d') {
+    $page_title = $name !== '' ? "$name's " . ($which == 'map' ? "map" : "3D view") : $portal[$which][0];
     $url = $name !== '' ? guild_map_url($name) : '';
     if ($url === '') {
-        $print_buffer .= "<p>" . ($name !== '' ? htmlspecialchars($name) . " isn't online, so there's no live map." : "Which character's map?")
+        $print_buffer .= guild_player_header($name, $which)
+            . "<p>" . ($name !== '' ? htmlspecialchars($name) . " isn't online, so there's no live " . ($which == 'map' ? "map" : "3D view") . "." : "Which character?")
             . " <a href='?a=portal&page=home'>Back to the guild</a></p>";
         return;
     }
-    $path = $url;
+    // the 3D view is the dashboard's player, fed by the character's map stream (its events: through the proxy /map/<port>/events)
+    $path = $which == 'map' ? $url : guild_dashboard_url('/live?3d&leader=' . rawurlencode($name) . '&events=' . rawurlencode($url . 'events'));
     $fixed = true;
 } elseif ($which == 'character') {
     $which = 'home';
     $path = '/home';
 }
-$src = htmlspecialchars($which == 'map' ? $path : guild_dashboard_url($path), ENT_QUOTES);
+$src = htmlspecialchars(in_array($which, array('map', '3d'), true) ? $path : guild_dashboard_url($path), ENT_QUOTES);
+// one character's map, 3D view, profile or upgrades: the same header over each (the operator, 5 Nov), and the framed page leaves its own
+// Map, Profile and Upgrades buttons out (it knows it's in here by the frame's name: codex:<the portal's address>)
+$player = $name !== '' && in_array($which, array('map', '3d', 'character', 'upgrades'), true);
+if ($player) {
+    $print_buffer .= guild_player_header($name, $which);
+}
 
 if ($fixed) {
     // a map wants the whole right-hand side: the page's own width limit and padding go while it's showing
     $print_buffer .= "<style>#bg-wrapper { max-width: none !important; } #col-main-inner-3 { padding-left: 0 !important; padding-right: 0 !important; }
         .page-content { margin-right: 0 !important; }</style>";
 }
-$print_buffer .= "<iframe id='guild-frame' src='$src' title='" . htmlspecialchars($page_title, ENT_QUOTES)
+$print_buffer .= "<iframe id='guild-frame' data-src='$src' title='" . htmlspecialchars($page_title, ENT_QUOTES)
     . "' style='border:0;width:100%;height:" . ($fixed ? "calc(100vh - 135px)" : "900px") . ";min-height:520px;display:block' scrolling='no'></iframe>
 <script>
 (function () {
     // the frame runs down at least as far as the menu on the left (the map's, or the log and chat's, bottom lines up with it);
     // a map fills the window below the banner; the other pages are the height of their own page
     var f = document.getElementById('guild-frame'), timer = null, fixed = " . ($fixed ? "true" : "false") . ";
+    // (named before it loads: the pages in it read their window's name, which stays theirs as they move on, to send their links here)
+    f.name = 'codex:' + location.origin;
+    f.src = f.getAttribute('data-src');
     function menuBottom() {
         var m = document.querySelector('.side_menu');
         return m && m.offsetParent !== null ? m.getBoundingClientRect().bottom + window.pageYOffset : 0;

@@ -90,6 +90,33 @@ $guild_page_style = "<style>
 
 // the guild dashboard's pages (puppeteer guild/dashboard), which the portal pages frame. Behind the guild's proxy
 // they're on this same site (/home, /reports/, /upgrades, /named); otherwise on the dashboard's own port.
+// the header over one character's pages in the portal (the operator, 5 Nov): Map, Profile and Upgrades always in the same place, then the
+// character's name and what is showing. Map is off while it isn't online (no live map); the map's own 3D button and the 3D view's 2D button
+// go between those two
+function guild_player_header($name, $which) {
+    $q = rawurlencode($name);
+    $online = $name !== '' && guild_map_url($name) !== '';
+    $what = array('map' => 'Map', '3d' => '3D view', 'character' => 'Profile', 'upgrades' => 'Upgrades');
+    $btn = function ($page, $label, $cls, $on, $title) use ($q, $which) {
+        $cur = $which == $page || ($page == 'map' && $which == '3d') ? ' cur' : '';
+        return $on ? "<a class='ph-btn $cls$cur' href='?a=portal&amp;page=$page&amp;name=$q' title='$title'>$label</a>"
+            : "<span class='ph-btn $cls off' title='$title (not online)'>$label</span>";
+    };
+    return "<style>
+  .ph { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 10px; padding: 8px 4px 10px; }
+  .ph-btn { font: 600 13px Inter, system-ui, sans-serif; color: #15110d !important; border-radius: 8px; padding: 4px 14px; text-decoration: none !important;
+    border: 2px solid transparent; }
+  .ph-btn:hover { filter: brightness(1.12); } .ph-btn.cur { border-color: currentColor; box-shadow: 0 0 0 2px rgba(0,0,0,.25) inset; }
+  .ph-map { background: #d8a94a; } .ph-profile { background: #6fa8dc; } .ph-upgrades { background: #6fbf73; }
+  .ph-btn.off { opacity: .4; cursor: default; filter: none; }
+  .ph-name { font: 700 18px Cinzel, Georgia, serif; margin-left: 6px; } .ph-what { opacity: .7; font-size: 15px; }
+</style><div class='ph'>"
+        . $btn('map', 'Map', 'ph-map', $online, htmlspecialchars($name, ENT_QUOTES) . "'s live map")
+        . $btn('character', 'Profile', 'ph-profile', true, "Its gear, bags, bank and bots")
+        . $btn('upgrades', 'Upgrades', 'ph-upgrades', true, "Where its upgrades drop, and what the General will choose")
+        . "<span class='ph-name'>" . htmlspecialchars($name) . "</span><span class='ph-what'>&middot; " . $what[$which] . "</span></div>";
+}
+
 function guild_dashboard_url($path) {
     if (!empty($_SERVER['HTTP_X_FORWARDED_HOST'])) {
         return $path;
