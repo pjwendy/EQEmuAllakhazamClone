@@ -320,7 +320,7 @@
         ?>
     </footer>
 
-    <div class="copyright">© 2016 EQEmulator :: Akkadius</div>
+    <div class="copyright">© 2026 EQEmulator :: Pjwendy</div>
 
 </div>
 
