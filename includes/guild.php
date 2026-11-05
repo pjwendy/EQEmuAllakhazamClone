@@ -115,8 +115,7 @@ function guild_player_header($name, $which) {
         . $btn('map', '2D', 'ph-map', $online, htmlspecialchars($name, ENT_QUOTES) . "'s live map")
         . $btn('3d', '3D', 'ph-3d', $online, htmlspecialchars($name, ENT_QUOTES) . " in 3D, as the game draws it")
         . $btn('history', 'History', 'ph-history', true, "Where it has been and why: its trail, the last 24 hours, to replay")
-        . $btn('character', 'Profile', 'ph-profile', true, "Its gear, bags, bank, corpses and bots")
-        . $btn('upgrades', 'Upgrades', 'ph-upgrades', true, "Where its upgrades drop, and what the General will choose")
+        . $btn('character', 'Profile', 'ph-profile', true, "Its gear, bags, bank, corpses, upgrades and bots")
         . "<span class='ph-name'>" . htmlspecialchars($name) . "</span><span class='ph-what'>&middot; " . $what[$which] . "</span></div>";
 }
 

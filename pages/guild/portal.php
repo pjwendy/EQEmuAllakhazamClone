@@ -47,11 +47,13 @@ if ($name !== '' && in_array($which, array('history', 'corpses'), true)) {
         $which = 'character';
     }
 } elseif ($name !== '' && in_array($which, array('character', 'upgrades'), true)) {
-    $path = ($which == 'upgrades' ? "/upgrades/" : "/character/") . rawurlencode($name);
+    // (a character's upgrades are on its profile now: the operator, 5 Nov; a link to them opens the profile there)
+    $path = "/character/" . rawurlencode($name) . ($which == 'upgrades' ? '#upgrades' : '');
     if ($which == 'character' && isset($_GET['bot']) && preg_match('/^[A-Za-z]{2,64}$/', $_GET['bot'])) {
         $path .= '#' . $_GET['bot'];  // (a bot's chip on the guild home: the owner's profile, at that bot)
     }
     $page_title = $name . ($which == 'upgrades' ? "'s upgrades" : "");
+    $which = 'character';
 } elseif ($which == 'map' || $which == '3d') {
     $page_title = $name !== '' ? "$name's " . ($which == 'map' ? "map" : "3D view") : $portal[$which][0];
     $url = $name !== '' ? guild_map_url($name) : '';
