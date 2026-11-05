@@ -40,8 +40,12 @@ $fixed = false;  // a frame of the viewport's height (a map is a canvas: it has 
 if ($name !== '' && in_array($which, array('history', 'corpses'), true)) {
     // where the character has been (the trail, the last 24 hours, to replay) and what lies on its corpses
     $day = isset($_GET['date']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $_GET['date']) ? $_GET['date'] : 'last24';  // (a day: from the daily report)
-    $path = $which == 'history' ? '/trail?leader=' . rawurlencode($name) . '&date=' . $day : '/corpses/' . rawurlencode($name);
+    // (its corpses are on its profile now: the operator, 5 Nov; a link to them opens the profile there)
+    $path = $which == 'history' ? '/trail?leader=' . rawurlencode($name) . '&date=' . $day : '/character/' . rawurlencode($name) . '#corpses';
     $page_title = $name . ($which == 'history' ? "'s history" : "'s corpses");
+    if ($which == 'corpses') {
+        $which = 'character';
+    }
 } elseif ($name !== '' && in_array($which, array('character', 'upgrades'), true)) {
     $path = ($which == 'upgrades' ? "/upgrades/" : "/character/") . rawurlencode($name);
     if ($which == 'character' && isset($_GET['bot']) && preg_match('/^[A-Za-z]{2,64}$/', $_GET['bot'])) {
