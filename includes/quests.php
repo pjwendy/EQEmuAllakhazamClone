@@ -19,13 +19,22 @@ function quests_available() {
 }
 
 // the quests that touch a zone (short name), an NPC (id) or an item (id): id, title and the roles
+// SQL: the quest (alias $q) is one this server has: one of its NPCs stands in a zone players can reach. Not the quest's own zone alone: a quest
+// scripted for both Commonlands (the newer zone, expansion 12) and the classic West Commonlands is filed under the newer one, and was hidden
+// on a server at an older expansion (Noresa Sparkle's Ragebringer, eq3, 7 Nov, missing from the Stained Parchment Top's page)
+function quests_open_sql($q = 'q') {
+    global $zones_table;
+    return "($q.zone IN (SELECT short_name FROM $zones_table) OR EXISTS (SELECT 1 FROM guild.quest_npcs qn WHERE qn.quest_id = $q.id
+            AND qn.zone IN (SELECT short_name FROM $zones_table)))";
+}
+
 function quests_touching($kind, $ref, $limit = 40) {
     if (!quests_available()) return array();
     global $zones_table;
     $kind = ($kind == 'zone' || $kind == 'npc') ? $kind : 'item';
     $ref = addslashes($ref);
     $r = db_mysql_query("SELECT q.id, q.title, GROUP_CONCAT(DISTINCT r.role) AS roles FROM guild.quest_refs r
-                         JOIN guild.quests q ON q.id = r.quest_id WHERE r.kind = '$kind' AND r.ref = '$ref' AND q.zone IN (SELECT short_name FROM $zones_table)
+                         JOIN guild.quests q ON q.id = r.quest_id WHERE r.kind = '$kind' AND r.ref = '$ref' AND " . quests_open_sql('q') . "
                          GROUP BY q.id, q.title ORDER BY q.title LIMIT " . intval($limit));
     $out = array();
     while ($r && ($row = mysqli_fetch_array($r))) $out[] = $row;

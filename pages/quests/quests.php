@@ -21,11 +21,14 @@ $where = array("1=1");
 if ($zone != '') $where[] = "q.id IN (SELECT quest_id FROM guild.quest_refs WHERE kind = 'zone' AND ref = '$zone')";
 if ($q != '') $where[] = "(q.title LIKE '%$q%' OR q.start_npc LIKE '%$q%')";
 if ($level > 0) $where[] = "q.level_min <= $level";
-$where[] = "q.zone IN (SELECT short_name FROM $zones_table)";  // (only zones this server has)
+require_once('includes/quests.php');
+$where[] = quests_open_sql('q');  // (only quests this server has: one of its NPCs in a zone players can reach)
 $where = implode(" AND ", $where);
 
 $total = intval(get_field_result("n", "SELECT COUNT(*) AS n FROM guild.quests q WHERE $where"));
-$result = db_mysql_query("SELECT q.id, q.title, q.zone, q.npcs, q.steps, q.level_min, z.long_name
+$result = db_mysql_query("SELECT q.id, q.title, q.zone, q.npcs, q.steps, q.level_min,
+                          COALESCE(z.long_name, (SELECT z2.long_name FROM guild.quest_npcs qn JOIN $zones_table z2 ON z2.short_name = qn.zone AND z2.version = 0
+                                                 WHERE qn.quest_id = q.id LIMIT 1)) AS long_name
                           FROM guild.quests q LEFT JOIN $zones_table z ON z.short_name = q.zone AND z.version = 0
                           WHERE $where ORDER BY z.long_name, q.title LIMIT " . (($page - 1) * $per) . ", $per");
 
