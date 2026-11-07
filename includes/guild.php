@@ -310,3 +310,56 @@ function guild_use_active_items() {
         $items_table = "guild.item_active";
     }
 }
+
+// a character's Profile in the portal (under its header); a bot: its owner's, at the bot
+function guild_profile_link($name, $bot = '') {
+    $href = "?a=portal&page=character&name=" . rawurlencode($name) . ($bot !== '' ? "&bot=" . rawurlencode($bot) : "");
+    return "<a href='" . htmlspecialchars($href, ENT_QUOTES) . "'>" . htmlspecialchars($bot !== '' ? $bot : $name) . "</a>";
+}
+
+// the item page's section: who has the item, the players' characters and the bots (the operator, 7 Nov: "We should list on the item page
+// who else has it (both players and bots)"), from the guild dashboard (/api/holders/<id>: worn, carried or banked, an augment too)
+function guild_item_holders_section($item_id) {
+    $d = guild_dashboard_json('/api/holders/' . intval($item_id));
+    if (!$d) return "";
+    $players = $d['players'] ?? array();
+    $bots = $d['bots'] ?? array();
+    $line = function ($h) {
+        $who = isset($h['owner']) ? guild_profile_link($h['owner'], $h['name']) . " <span class='gp-muted'>(" . htmlspecialchars($h['owner']) . "'s bot)</span>"
+            : guild_profile_link($h['name']);
+        return "<li>$who &middot; " . intval($h['level']) . " " . htmlspecialchars(guild_class_name($h['class']))
+            . ($h['count'] > 1 ? " &middot; &times;" . intval($h['count']) : "") . " <span class='gp-muted'>" . htmlspecialchars(implode(", ", $h['where'])) . "</span></li>";
+    };
+    $html = "<tr><td colspan='2'><h2 class='section_header'>Who has it</h2>";
+    if (!$players && !$bots) {
+        return $html . "<p>No player or bot has one.</p></td></tr>";
+    }
+    if ($players) {
+        $html .= "<b>Players</b> (" . count($players) . ")<ul>" . implode("", array_map($line, $players)) . "</ul>";
+    }
+    if ($bots) {
+        $html .= "<b>Bots</b> (" . count($bots) . ")<ul>" . implode("", array_map($line, $bots)) . "</ul>";
+    }
+    return $html . "</td></tr>";
+}
+
+// the NPC page's section: the dash cam's recordings of it (the operator, 7 Nov: "Add a recordings option to the mob page so we can see it
+// being killed"): its kills, the upgrades it dropped and the deaths it caused, each to watch in the portal's player
+function guild_npc_recordings_section($npc_id) {
+    $d = guild_dashboard_json('/api/recordings?npc=' . intval($npc_id));
+    $recs = $d['recordings'] ?? array();
+    $html = "<h2 class='section_header'>Recordings</h2>";
+    if (!$recs) {
+        return $html . "<p>No recording of it yet (a named kill, an upgrade it drops or a death it causes keeps one).</p>";
+    }
+    $kinds = array('named' => 'Killed', 'upgrade' => 'Upgrade drop', 'death' => 'Killed one of ours', 'close call' => 'Close call', 'manual' => 'Recorded');
+    $html .= "<table class='datatable'><tr><th>When</th><th>What</th><th>Group</th><th></th></tr>";
+    $tz = new DateTimeZone(getenv('GUILD_TZ') ?: 'Europe/Stockholm');  // (the container's clock is UTC; the guild's is Sweden's)
+    foreach (array_slice($recs, 0, 50) as $r) {
+        $when = (new DateTime('@' . intval($r['started'])))->setTimezone($tz)->format('D j M H:i');
+        $html .= "<tr><td style='white-space:nowrap'>" . $when . "</td><td><b>"
+            . htmlspecialchars($kinds[$r['kind']] ?? $r['kind']) . "</b> &middot; " . htmlspecialchars($r['title']) . "</td><td>" . guild_profile_link($r['leader'])
+            . "</td><td><a href='?a=portal&amp;page=player&amp;id=" . intval($r['id']) . "'>Watch</a></td></tr>";
+    }
+    return $html . "</table>" . (count($recs) > 50 ? "<p class='gp-muted'>The newest 50 of " . count($recs) . ".</p>" : "");
+}
