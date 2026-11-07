@@ -63,6 +63,8 @@ $content = '
         </tr>
     ';
 $content .= display_row($item_data);
+require_once('includes/quests.php');
+$content .= quests_item_lines($item_id);  // (in the details box and the tooltip: the quests it's used in, and those it's a reward of)
 if (!isset($_GET['v_tooltip'])) {
     $content .= return_where_item_dropped_count($item_id);
     $content .= return_where_item_foraged($item_id);

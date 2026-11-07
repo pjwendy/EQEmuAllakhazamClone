@@ -32,6 +32,28 @@ function quests_touching($kind, $ref, $limit = 40) {
     return $out;
 }
 
+// an item's quests in a line or two for its details box (and its tooltip): the quests it's used in (needed, handed in), and the ones that give
+// it; the whole list, with each quest's part, is the Quests section further down (the operator, 7 Nov: "If an item is used in a quest we
+// should list the quest in the item's details")
+function quests_item_lines($item_id, $show = 3) {
+    $rows = quests_touching('item', $item_id, 200);
+    if (!$rows) return "";
+    $used = array(); $from = array();
+    foreach ($rows as $q) {
+        $roles = array_filter(explode(",", (string) $q['roles']));
+        if (array_intersect($roles, array('gather', 'takes'))) $used[] = $q;
+        elseif (array_intersect($roles, array('reward', 'gives'))) $from[] = $q;
+    }
+    $line = function ($label, $qs) use ($show) {
+        if (!$qs) return "";
+        $links = array_map(function ($q) { return quest_link($q['id'], $q['title']); }, array_slice($qs, 0, $show));
+        $more = count($qs) > $show ? " and " . (count($qs) - $show) . " more (Quests, below)" : "";
+        return "<tr><td colspan='2'><b>$label: </b>" . implode("; ", $links) . $more . "</td></tr>";
+    };
+    return $line(count($used) == 1 ? "Used in the quest" : "Used in the quests", $used)
+         . $line(count($from) == 1 ? "Reward from the quest" : "Reward from the quests", $from);
+}
+
 // a list of quests as a section, nothing if none
 function quests_section($heading, $kind, $ref) {
     $rows = quests_touching($kind, $ref);
