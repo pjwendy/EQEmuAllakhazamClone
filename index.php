@@ -142,6 +142,7 @@
                                             </tr>
                                             <tr>
                                                 <td  class="menu_item">
+                                                    <li><a href="?a=portal&page=roles">Roles</a> </li>
                                                     <li><a href="?a=portal&page=reports">Daily Reports</a> </li>
                                                     <li><a href="?a=portal&page=spending">Spending</a> </li>
                                                     <li><a href="?a=portal&page=recordings">Recordings</a> </li>

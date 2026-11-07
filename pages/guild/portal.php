@@ -11,6 +11,7 @@ $portal = array(
     'reports'  => array("Daily Reports", "/reports/"),
     'upgrades' => array("Upgrades", "/upgrades"),
     'named'    => array("Named", "/named"),
+    'roles'    => array("Roles", "/roles"),
     'releases' => array("Releases", "/releases"),
     'incidents' => array("Incidents", "/incidents"),
     'backlog' => array("Backlog", "/backlog"),
