@@ -163,3 +163,9 @@ hr { border: 0; border-top: 1px solid var(--line); }
 
 /* the page uses the room there is (zam capped these at 1420px and 95%); the bg-wrapper's padding is the margin */
 #skin-wrap, #wrapper, #header { max-width: none !important; width: 100% !important; }
+
+/* the Allakhazam row stripes (lr / dr) on the theme's colours: the dark rows kept the old tan (#d7c69a) under the theme's text, light on tan in
+   the dark theme and gold links on tan in the light one, hard to read (the operator, 8 Nov) */
+.lr, .s2-lr, tr.lr { background: var(--panel) !important; color: var(--text) !important; }
+.dr, .s2-dr, tr.dr { background: var(--panel-2) !important; color: var(--text) !important; }
+tr.lr:hover, tr.dr:hover { outline: 1px solid var(--gold); }
