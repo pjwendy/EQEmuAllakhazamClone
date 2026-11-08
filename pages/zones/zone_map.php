@@ -28,6 +28,7 @@ function guild_zone_map($short_name) {
   <div class='zm-toggles' id='zm-toggles'></div>
   <div class='zm-legend' id='zm-navlegend' hidden></div>
   <div class='zm-legend' id='zm-stucklegend' hidden></div>
+  <div class='zm-legend' id='zm-auditlegend' hidden></div>
   <div class='zm-height'><label><input type='checkbox' id='zm-slice'> Height slice</label>
     <input type='range' id='zm-z' min='-1000' max='1000' step='1' disabled> <span id='zm-zval' class='zm-note'></span>
     <label class='zm-note'>± <input type='number' id='zm-zw' value='40' min='5' max='500' step='5' style='width:56px'></label>
@@ -87,7 +88,10 @@ function guild_zone_map($short_name) {
     ['locked', 'Locked doors', '#e8590c', true], ['doors', 'Other doors', '#868e96', false],
     ['ladders', 'Ladders', '#2b8a3e', true], ['jumps', 'Jumps', '#f08c00', true], ['swims', 'Swims', '#1c7ed6', true], ['teleports', 'Nav teleports', '#ae3ec9', true],
     ['boats', 'Boats', '#0b7285', true], ['spawns', 'Spawn points', '#495057', false],
-    ['survey', 'Survey failures', '#e03131', false], ['stuck', 'Stuck spots (7 days)', '#c2255c', false]];
+    ['survey', 'Survey failures', '#e03131', false], ['stuck', 'Stuck spots (7 days)', '#c2255c', false],
+    ['gap_bridge', 'Gaps: bridges', '#f03e3e', false], ['gap_poi', 'Gaps: near zone lines/spawns', '#fd7e14', false], ['gap_plain', 'Gaps: other', '#fab005', false],
+    ['gap_outside', 'Gaps: outside the world', '#adb5bd', false], ['phantom', 'Phantom navmesh', '#9c36b5', false], ['water', 'Underwater floor', '#4dabf7', false],
+    ['zlregions', 'Zone line regions', '#2f9e44', false]];
   var KEY = 'zm.layers.v1', on = {};
   var saved = {}; try { saved = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) {}
   DEFS.forEach(function (d) { on[d[0]] = d[0] in saved ? !!saved[d[0]] : d[3]; });
@@ -107,7 +111,7 @@ function guild_zone_map($short_name) {
   var home = [minX - pad, minY - pad, maxX - minX + 2 * pad, maxY - minY + 2 * pad], view = home.slice(), size = Math.max(home[2], home[3]);
 
   var G = {};
-  ['navlinks', 'lines', 'swims', 'ladders', 'jumps', 'teleports', 'boats', 'survey', 'stuck', 'spawns', 'doors', 'locked', 'lifts', 'books', 'zonelines', 'camps', 'places', 'links']
+  ['gap_bridge', 'gap_poi', 'gap_plain', 'gap_outside', 'phantom', 'water', 'zlregions', 'navlinks', 'lines', 'swims', 'ladders', 'jumps', 'teleports', 'boats', 'survey', 'stuck', 'spawns', 'doors', 'locked', 'lifts', 'books', 'zonelines', 'camps', 'places', 'links']
     .forEach(function (k) { G[k] = el('g', {}); });
   data.lines.forEach(function (l) { el('line', {x1: l[0], y1: l[1], x2: l[2], y2: l[3], 'class': 'ml'}, G.lines); });
   data.labels.forEach(function (p) { el('text', {x: p[0], y: p[1], 'class': 'place', 'data-fs': 0.012}, G.places).textContent = p[2]; });
@@ -162,13 +166,28 @@ function guild_zone_map($short_name) {
     var f = fit(), dpr = window.devicePixelRatio || 1;
     if (cv.width !== Math.round(f.w * dpr) || cv.height !== Math.round(f.h * dpr)) { cv.width = Math.round(f.w * dpr); cv.height = Math.round(f.h * dpr); }
     var ctx = cv.getContext('2d'); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, cv.width, cv.height);
-    if (!L || !L.navmesh || !on.navmesh) return;
-    buildNav();
+    if (L && L.navmesh && on.navmesh) {
+      buildNav();
     ctx.setTransform(dpr * f.s, 0, 0, dpr * f.s, dpr * (f.ox - view[0] * f.s), dpr * (f.oy - view[1] * f.s));
     ctx.lineWidth = 1 / f.s;
-    for (var k in navPaths) { var c = islandColour(+k); ctx.fillStyle = ctx.strokeStyle = c; ctx.globalAlpha = .22; ctx.fill(navPaths[k]); ctx.globalAlpha = .55; ctx.stroke(navPaths[k]); }
+      for (var k in navPaths) { var c = islandColour(+k); ctx.fillStyle = ctx.strokeStyle = c; ctx.globalAlpha = .22; ctx.fill(navPaths[k]); ctx.globalAlpha = .55; ctx.stroke(navPaths[k]); }
+    }
+    if (L && L.audit) drawAudit(ctx, f, dpr);  // (over the navmesh: the gaps are what's to be seen)
   }
 
+  var AUDIT_COL = {bridge: '#f03e3e', poi: '#fd7e14', plain: '#fab005', outside: '#adb5bd', phantom: '#9c36b5', water: '#4dabf7', zoneline: '#2f9e44'};
+  var AUDIT_ON = {bridge: 'gap_bridge', poi: 'gap_poi', plain: 'gap_plain', outside: 'gap_outside', phantom: 'phantom', water: 'water', zoneline: 'zlregions'};
+  function auditCol(p) { return p.kind === 'zoneline' && (p.islands || []).indexOf(0) < 0 ? '#e03131' : AUDIT_COL[p.kind]; }
+  function drawAudit(ctx, f, dpr) {
+    var zw = zWin(), st = L.audit.step || 4;
+    ctx.save(); ctx.setTransform(dpr * f.s, 0, 0, dpr * f.s, dpr * (f.ox - view[0] * f.s), dpr * (f.oy - view[1] * f.s));
+    L.audit.patches.forEach(function (p) {
+      if (!on[AUDIT_ON[p.kind]]) return;
+      ctx.fillStyle = auditCol(p); ctx.globalAlpha = p.kind === 'zoneline' ? .45 : .7;
+      for (var i = 0; i < p.c.length; i++) { var c = p.c[i]; if (zw && (c[2] < zw[0] || c[2] > zw[1])) continue; ctx.fillRect(c[0] - st / 2, c[1] - st / 2, st, st); }
+    });
+    ctx.restore();
+  }
   function draw() {
     svg.setAttribute('viewBox', view.join(' '));
     var f = fit(), u = 1 / f.s, zw = zWin();  // u: one screen pixel in map units
@@ -190,6 +209,7 @@ function guild_zone_map($short_name) {
   function show() {
     var lg = document.getElementById('zm-navlegend'); lg.hidden = !(on.navmesh && L && L.navmesh);
     document.getElementById('zm-stucklegend').hidden = !(on.stuck && L && (L.stuck || []).length);
+    document.getElementById('zm-auditlegend').hidden = !(L && L.audit && (on.gap_bridge || on.gap_poi || on.gap_plain || on.gap_outside || on.phantom || on.water || on.zlregions));
     for (var k in G) {
       var id = k === 'navlinks' ? 'links' : k;
       G[k].style.display = on[id] === false ? 'none' : '';
@@ -284,6 +304,33 @@ function guild_zone_map($short_name) {
         return '<span class=\"isl\"><span class=\"sw\" style=\"background:' + islandColour(1 + i % PALETTE.length) + ' !important\"></span>#' + i + ': '
           + (100 * e.area / ISL_TOTAL).toFixed(1) + '%, z ' + Math.round(e.zlo) + (e.zhi - e.zlo > 2 ? ' to ' + Math.round(e.zhi) : '') + '</span>'; }).join('');
       document.getElementById('zm-navlegend').innerHTML = html;
+    }
+    // the audit's patches (tools/navaudit.py): a marker at each one's middle, its cells on the canvas
+    var A = d.audit;
+    if (A) {
+      var KDESC = {bridge: 'floor the client has and the navmesh doesn\'t, touching navmesh islands ', poi: 'floor with no navmesh, with a zone line, spawn, camp or stuck spot in it',
+        plain: 'floor with no navmesh', outside: 'floor with no navmesh touching none of it and nothing in it: out of the playable world', zoneline: 'the zone line\'s region (the server\'s water map): reached by island ', phantom: 'navmesh where the client has no standable floor (the server\'s collision map and the client disagree)', water: 'floor under deep water (left to the swims)'};
+      A.patches.forEach(function (p) {
+        var g = G[AUDIT_ON[p.kind]]; if (!g) return;
+        mark(g, [p.x, p.y, p.z], 'circle', auditCol(p), p.kind === 'bridge' || p.kind === 'zoneline' ? 6 : 4,
+          p.id + ' · ' + p.kind + ': ' + KDESC[p.kind] + (p.kind === 'bridge' || p.kind === 'zoneline' ? ((p.islands || []).length ? '#' + p.islands.join(', #') : 'none') + (p.islands && p.islands.indexOf(0) >= 0 ? ' (the main island among them)' : p.kind === 'zoneline' ? ' (NOT the main island: from the main area no walk gets to it)' : '') : '')
+          + (p.kind === 'zoneline' ? ' · ' + p.covered + '% of its floor has navmesh' : '')
+          + '\\n' + p.area + ' square units · z ' + p.zmin + (p.zmax - p.zmin > 2 ? ' to ' + p.zmax : '')
+          + (p.pois && p.pois.length ? '\\nin it: ' + p.pois.slice(0, 8).join('; ') + (p.pois.length > 8 ? '; …' : '') : '') + '\\n' + loc([p.x, p.y, p.z]),
+          p.kind === 'bridge' || p.kind === 'zoneline' ? p.id : '');
+      });
+      ['bridge', 'poi', 'plain', 'outside', 'phantom', 'water'].forEach(function (k) { counts[AUDIT_ON[k]] = (A.counts || {})[k] || 0; });
+      counts.zlregions = A.patches.filter(function (p) { return p.kind === 'zoneline'; }).length;
+      document.getElementById('zm-auditlegend').innerHTML = '<b>The geometry audit</b> (' + (A.when || '') + ') laid the client\'s own floors over the navmesh, every ' + A.step + ' units: '
+        + A.covered_pct + '% of the floor a character could stand on has navmesh. What\'s left is drawn by kind: '
+        + '<span class=\"sw\" style=\"background:#f03e3e !important\"></span><b>bridges</b>: floor with no navmesh touching two or more islands, so the likeliest place to join them (each marked with its id); '
+        + '<span class=\"sw\" style=\"background:#fd7e14 !important\"></span><b>near points of interest</b>: a gap with a zone line, spawn point, camp or stuck spot in it; '
+        + '<span class=\"sw\" style=\"background:#fab005 !important\"></span><b>other gaps</b>; '
+        + '<span class=\"sw\" style=\"background:#9c36b5 !important\"></span><b>phantom navmesh</b>: navmesh where the client has no floor to stand on (in a wall, in the air, under the ground); '
+        + '<span class=\"sw\" style=\"background:#4dabf7 !important\"></span><b>underwater floor</b>, which the navmesh leaves to the swims; '
+        + '<span class=\"sw\" style=\"background:#adb5bd !important\"></span><b>outside the world</b>: floor touching no navmesh with nothing in it. '
+        + '<b>Zone line regions</b> (the server\'s own, from its water map) show <span class=\"sw\" style=\"background:#2f9e44 !important\"></span>green when the main island reaches them and <span class=\"sw\" style=\"background:#e03131 !important\"></span>red when it doesn\'t (a walk from the main area can\'t get there). '
+        + 'Gaps right beside walls and ledges are the navmesh\'s own margin and aren\'t shown. Hover a marker for its size, height and what\'s in it.';
     }
     // what the stuck spots' kinds mean (the server's walk notes, eqmq NavNote)
     var KIND = {not_connected: 'the start and the goal are on navmesh islands that aren\'t joined: no walk can link them',
