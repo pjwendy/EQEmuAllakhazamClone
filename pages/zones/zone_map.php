@@ -26,6 +26,8 @@ function guild_zone_map($short_name) {
     . " · wheel to zoom, drag to pan, double click to reset · hover anything for details</span>
     <span class='zm-note' id='zm-status'>loading the navigation layers…</span></div>
   <div class='zm-toggles' id='zm-toggles'></div>
+  <div class='zm-legend' id='zm-navlegend' hidden></div>
+  <div class='zm-legend' id='zm-stucklegend' hidden></div>
   <div class='zm-height'><label><input type='checkbox' id='zm-slice'> Height slice</label>
     <input type='range' id='zm-z' min='-1000' max='1000' step='1' disabled> <span id='zm-zval' class='zm-note'></span>
     <label class='zm-note'>± <input type='number' id='zm-zw' value='40' min='5' max='500' step='5' style='width:56px'></label>
@@ -33,6 +35,7 @@ function guild_zone_map($short_name) {
   <div class='zm-stage' id='zm-stage'>
     <canvas id='zm-nav' class='zm-canvas'></canvas>
     <svg id='zm' class='zm' xmlns='http://www.w3.org/2000/svg'></svg>
+    <div class='zm-hover' id='zm-hover' hidden></div>
   </div>
 </div>
 <style>
@@ -53,6 +56,12 @@ function guild_zone_map($short_name) {
   .zm-btn { font: 12px Inter, sans-serif; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--text); padding: 3px 10px; cursor: pointer; }
   .zm-wrap.full { position: fixed; inset: 0; z-index: 2147483000; margin: 0; padding: 10px 14px; background: var(--panel, #fffdf6); overflow: auto; display: flex; flex-direction: column; }
   .zm-wrap.full .zm-stage { flex: 1; height: auto; min-height: 300px; }
+  .zm-legend { font-size: 12px; line-height: 1.5; border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; margin: 0 0 8px; background: var(--panel); }
+  .zm-legend b { font-weight: 600; }
+  .zm-legend .sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -2px; margin: 0 4px 0 0; }
+  .zm-legend .isl { display: inline-flex; align-items: center; margin: 2px 10px 0 0; color: var(--muted); }
+  .zm-hover { position: absolute; pointer-events: none; font-size: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+    padding: 5px 8px; box-shadow: 0 4px 14px rgba(0,0,0,.18); max-width: 300px; z-index: 2; }
   .zm-canvas, .zm { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
   .zm { cursor: grab; }
   .zm line.ml { stroke: var(--muted); stroke-opacity: .55; vector-effect: non-scaling-stroke; stroke-width: 1; }
@@ -69,7 +78,7 @@ function guild_zone_map($short_name) {
 <script>
 (function () {
   var data = $json, LAYERS_URL = $layers_url, svg = document.getElementById('zm'), cv = document.getElementById('zm-nav'), stage = document.getElementById('zm-stage');
-  var NS = 'http://www.w3.org/2000/svg', L = null;
+  var NS = 'http://www.w3.org/2000/svg', L = null, ISL = {}, ISL_TOTAL = 1;
   // the layers: id, label, colour, on by default
   var DEFS = [
     ['lines', 'Map lines', '#8a8270', true], ['places', 'Place names', '#8a8270', true], ['camps', 'Camps', '#c9a227', true],
@@ -179,6 +188,8 @@ function guild_zone_map($short_name) {
     drawNav();
   }
   function show() {
+    var lg = document.getElementById('zm-navlegend'); lg.hidden = !(on.navmesh && L && L.navmesh);
+    document.getElementById('zm-stucklegend').hidden = !(on.stuck && L && (L.stuck || []).length);
     for (var k in G) {
       var id = k === 'navlinks' ? 'links' : k;
       G[k].style.display = on[id] === false ? 'none' : '';
@@ -248,6 +259,42 @@ function guild_zone_map($short_name) {
       if (n.to) seg(G.stuck, n.at, n.to, C.stuck, '1 4', n.who + ': wanted to get here', n.at[2]);
       mark(G.stuck, n.at, 'circle', C.stuck, 3.5, n.who + ': ' + n.kind + ' (' + new Date(n.t * 1000).toLocaleString() + ')\\n' + loc(n.at) + (n.to ? '\\nheading for ' + loc(n.to) : ''));
     });
+    // the islands: each one's walkable area (the polygons' shoelace areas), for the legend and the hover
+    ISL = {};
+    var total = 0;
+    (d.navmesh && d.navmesh.polys || []).forEach(function (p) {
+      var a = 0, n = (p.length - 2) / 2;
+      for (var i = 0; i < n; i++) { var j = (i + 1) % n; a += p[2 + 2 * i] * p[3 + 2 * j] - p[2 + 2 * j] * p[3 + 2 * i]; }
+      a = Math.abs(a) / 2; total += a;
+      var e = ISL[p[0]] || (ISL[p[0]] = {area: 0, polys: 0, zlo: Infinity, zhi: -Infinity}); e.area += a; e.polys++; if (p[1] < e.zlo) e.zlo = p[1]; if (p[1] > e.zhi) e.zhi = p[1];
+    });
+    ISL_TOTAL = total || 1;
+    if (d.navmesh) {
+      var ids = Object.keys(ISL).map(Number).sort(function (a, b) { return a - b; }), main = ISL[0], others = ids.length - 1;
+      var tiny = ids.filter(function (i) { return i > 0 && ISL[i].area / ISL_TOTAL < 0.001; }).length;
+      var html = '<b>The navmesh</b> is where a character can walk. Each separate piece of it (an <b>island</b>) has its own colour: a character can walk anywhere on '
+        + 'its island but can\'t walk from one island to another. '
+        + '<span class=\"sw\" style=\"background:' + islandColour(0) + ' !important\"></span><b>Green</b> is the main island, the biggest: ' + (main ? Math.round(100 * main.area / ISL_TOTAL) : 0)
+        + '% of the walkable area; the zone lines, camps and books the leaders use should be on it. '
+        + 'Every <b>other colour</b> is a piece not joined to the green (' + others + ' of them' + (tiny ? ', ' + tiny + ' tiny' : '') + '): a leader there is stuck unless a jump, ladder or '
+        + 'off-mesh link (dashed pink) joins it. The colours repeat (' + PALETTE.length + ' of them), so two pieces of the same colour aren\'t joined either. '
+        + 'With a height slice, only that floor is drawn. Hover the mesh to see which island a spot is on.';
+      var big = ids.filter(function (i) { return i > 0; }).slice(0, 8);
+      if (big.length) html += '<br><b>Largest other islands:</b> ' + big.map(function (i) { var e = ISL[i];
+        return '<span class=\"isl\"><span class=\"sw\" style=\"background:' + islandColour(1 + i % PALETTE.length) + ' !important\"></span>#' + i + ': '
+          + (100 * e.area / ISL_TOTAL).toFixed(1) + '%, z ' + Math.round(e.zlo) + (e.zhi - e.zlo > 2 ? ' to ' + Math.round(e.zhi) : '') + '</span>'; }).join('');
+      document.getElementById('zm-navlegend').innerHTML = html;
+    }
+    // what the stuck spots' kinds mean (the server's walk notes, eqmq NavNote)
+    var KIND = {not_connected: 'the start and the goal are on navmesh islands that aren\'t joined: no walk can link them',
+      no_mesh_there: 'the goal has no navmesh under it (in a wall, under the floor, in the air)', no_mesh_here: 'the leader stood off the navmesh',
+      off_mesh: 'the walk had to step off the navmesh to go on', straight_walk: 'no path, so it walked straight at the goal', stuck: 'it stopped moving (a wall, a ledge, a door)',
+      too_deep: 'water deeper than its breath allowed', locked: 'a locked door it had no key for (picked, or the key fetched, now)', door_wont_open: 'a door that didn\'t open',
+      cant_jump: 'a drop or jump it couldn\'t make', NO_PATH: 'no path found'};
+    var kinds = {}; (d.stuck || []).forEach(function (n) { kinds[n.kind] = (kinds[n.kind] || 0) + 1; });
+    document.getElementById('zm-stucklegend').innerHTML = '<b>Stuck spots</b> are where a leader\'s walk failed this past week. Each <span class=\"sw\" style=\"background:#c2255c !important;border-radius:50%\"></span><b>dot</b> is where the leader was when it failed; the <b>dotted line</b> from it runs to the point it was trying to reach. '
+      + 'Dots that bunch up mark a spot the navmesh needs fixing; long lines usually mean the goal and the leader were on different islands. Hover a dot for who, when and why. By kind:<br>'
+      + Object.keys(kinds).sort(function (a, b) { return kinds[b] - kinds[a]; }).map(function (k) { return '<b>' + k + '</b> ' + kinds[k] + ': ' + (KIND[k] || k); }).join('<br>');
     counts.navmesh = d.navmesh ? (d.navmesh.polys || []).length + ' polys, ' + (d.navmesh.islands || 0) + ' islands' : 'none';
     counts.links = d.navmesh ? (d.navmesh.links || []).length : 0;
     ['zonelines', 'ladders', 'jumps', 'swims', 'teleports', 'boats', 'spawns', 'survey', 'stuck'].forEach(function (k) { counts[k] = (d[k] || []).length; });
@@ -286,6 +333,27 @@ function guild_zone_map($short_name) {
     view[0] = drag[0] - (e.clientX - r.left - f.ox) / f.s; view[1] = drag[1] - (e.clientY - r.top - f.oy) / f.s; draw();
   });
   svg.addEventListener('dblclick', function () { view = home.slice(); draw(); });
+  // the island under the pointer (the navmesh drawn): a point-in-polygon over its polygons, a few times a second
+  var hoverBox = document.getElementById('zm-hover'), hoverAt = 0;
+  function inPoly(x, y, p) {
+    var n = (p.length - 2) / 2, c = false;
+    for (var i = 0, j = n - 1; i < n; j = i++) { var xi = p[2 + 2 * i], yi = p[3 + 2 * i], xj = p[2 + 2 * j], yj = p[3 + 2 * j];
+      if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) c = !c; }
+    return c;
+  }
+  svg.addEventListener('mousemove', function (e) {
+    if (drag || !on.navmesh || !L || !L.navmesh) { hoverBox.hidden = true; return; }
+    var now = performance.now(); if (now - hoverAt < 120) return; hoverAt = now;
+    var pt = point(e), zw = zWin(), hit = null;
+    var polys = L.navmesh.polys;
+    for (var k = 0; k < polys.length; k++) { var p = polys[k]; if (zw && (p[1] < zw[0] || p[1] > zw[1])) continue; if (inPoly(pt[0], pt[1], p)) { hit = p; if (p[0] === 0) break; } }
+    if (!hit) { hoverBox.hidden = true; return; }
+    var isl = ISL[hit[0]] || {area: 0}, r = stage.getBoundingClientRect();
+    hoverBox.innerHTML = (hit[0] === 0 ? '<b>Main island</b> (green): ' : '<b>Island #' + hit[0] + '</b>: <b>not joined to the main island</b>, ')
+      + (100 * isl.area / ISL_TOTAL).toFixed(isl.area / ISL_TOTAL < 0.01 ? 2 : 1) + '% of the walkable area' + '<br>here: z ' + Math.round(hit[1]) + ' · /loc ' + Math.round(-pt[1]) + ', ' + Math.round(-pt[0]);
+    hoverBox.style.left = Math.min(r.width - 310, e.clientX - r.left + 14) + 'px'; hoverBox.style.top = (e.clientY - r.top + 14) + 'px'; hoverBox.hidden = false;
+  });
+  svg.addEventListener('mouseleave', function () { hoverBox.hidden = true; });
   window.addEventListener('resize', draw);
   var wrap = document.querySelector('.zm-wrap'), fullBtn = document.getElementById('zm-full');
   var home_parent = wrap.parentNode, home_next = wrap.nextSibling;

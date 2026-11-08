@@ -58,7 +58,7 @@
 
     <link rel="stylesheet" type="text/css" href="./zam_files/zul.css" id="zul-bar-stylesheet">
     <!-- the guild's look over all of the above: the dashboard's colours, fonts and light or dark -->
-    <link rel="stylesheet" type="text/css" href="includes/guild-skin.css">
+    <link rel="stylesheet" type="text/css" href="includes/guild-skin.css?v=<?php echo @filemtime(__DIR__ . "/includes/guild-skin.css"); ?>">
 
     <?php
         if($hide_navbar){

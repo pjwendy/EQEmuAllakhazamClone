@@ -169,3 +169,12 @@ hr { border: 0; border-top: 1px solid var(--line); }
 .lr, .s2-lr, tr.lr { background: var(--panel) !important; color: var(--text) !important; }
 .dr, .s2-dr, tr.dr { background: var(--panel-2) !important; color: var(--text) !important; }
 tr.lr:hover, tr.dr:hover { outline: 1px solid var(--gold); }
+
+/* the striped lists (the zone's bestiary, its items, an NPC's drops): stronger, the operator still found them hard to read (8 Nov). The
+   stripe a touch deeper, the names in the rows the theme's text-strength gold (light: darker than the links elsewhere) */
+:root { --row-2: #2a251f; --row-link: #f2cf7d; }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --row-2: #ece1cd; --row-link: #5e420a; } }
+:root[data-theme="light"] { --row-2: #ece1cd; --row-link: #5e420a; }
+.dr, .s2-dr, tr.dr { background: var(--row-2) !important; }
+tr.lr a, tr.dr a, tr.lr td a, tr.dr td a { color: var(--row-link) !important; font-weight: 500; }
+tr.lr td, tr.dr td { color: var(--text) !important; }
