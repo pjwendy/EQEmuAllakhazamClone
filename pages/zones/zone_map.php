@@ -218,7 +218,8 @@ function guild_zone_map($short_name) {
     (d.doors || []).forEach(function (o) {
       var k = dk[o.kind]; if (!k) return;
       var txt = (o.kind === 'book' ? 'Book / teleport door' : o.kind === 'lift' ? 'Lift' : o.kind === 'locked' ? 'Locked door' : 'Door') + ' #' + o.id + ' (' + o.name + ')'
-        + (o.to ? '\\nto ' + o.to : '') + (o.key ? '\\nkey item ' + o.key : '') + (o.lockpick ? '\\nlockpick ' + o.lockpick : '') + '\\n' + loc(o.at);
+        + (o.to ? '\\nto ' + o.to : '') + (o.key ? '\\nneeds the ' + (o.key_name || 'item ' + o.key) + ' (item ' + o.key + ')' : '')
+        + (o.key_from && o.key_from.length ? '\\ndropped by ' + o.key_from.join(', ') : '') + (o.lockpick ? '\\nor picked: Pick Lock ' + o.lockpick + ', lockpicks on the cursor' : '') + '\\n' + loc(o.at);
       mark(G[k[0]], o.at, k[1], C[k[0]], k[2], txt, o.kind === 'book' ? '→ ' + o.to : o.kind === 'locked' ? 'locked' : '');
     });
     [['ladders', 'Ladder'], ['jumps', 'Jump'], ['teleports', 'Navmesh teleport']].forEach(function (x) {

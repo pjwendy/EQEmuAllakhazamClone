@@ -363,3 +363,24 @@ function guild_npc_recordings_section($npc_id) {
     }
     return $html . "</table>" . (count($recs) > 50 ? "<p class='gp-muted'>The newest 50 of " . count($recs) . ".</p>" : "");
 }
+
+// a key's doors: where it opens a locked door (peq.doors keyitem), in the zones players can reach; for the item's page (the operator, 8 Nov:
+// "we just need to be aware of how to get through them and unlock them")
+function guild_item_doors_section($item_id) {
+    global $zones_table;
+    $id = intval($item_id);
+    $r = @db_mysql_query("SELECT d.zone, d.doorid, d.pos_x, d.pos_y, d.pos_z, d.lockpick, d.nokeyring, z.long_name FROM doors d
+                          JOIN $zones_table z ON z.short_name = d.zone AND z.version = 0 WHERE d.version = 0 AND d.keyitem = $id ORDER BY z.long_name, d.doorid");
+    $rows = array();
+    while ($r && ($row = mysqli_fetch_array($r))) $rows[] = $row;
+    if (!$rows) return "";
+    $out = "<tr><td colspan='2'><h2 class='section_header'>Opens</h2><ul>";
+    foreach ($rows as $d) {
+        $out .= "<li>a locked door in <a href='?a=zone&name=" . urlencode($d['zone']) . "'>" . htmlspecialchars($d['long_name']) . "</a> (door "
+            . intval($d['doorid']) . ", /loc " . round($d['pos_y']) . ", " . round($d['pos_x']) . ", " . round($d['pos_z']) . ")"
+            . (intval($d['nokeyring']) ? " <span style='color:var(--muted)'>(not kept on the keyring: carry the key)</span>"
+                                       : " <span style='color:var(--muted)'>(onto the keyring the first time it's used)</span>")
+            . (intval($d['lockpick']) ? " <span style='color:var(--muted)'>· or picked at Pick Lock " . intval($d['lockpick']) . "</span>" : "") . "</li>";
+    }
+    return $out . "</ul></td></tr>";
+}

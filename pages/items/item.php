@@ -78,6 +78,7 @@ if (!isset($_GET['v_tooltip'])) {
     require_once('includes/guild.php');
     $content .= guild_item_score_section($item_id);
     $content .= guild_item_holders_section($item_id);
+    $content .= guild_item_doors_section($item_id);
 } else {
     require_once('includes/guild.php');
     $content .= guild_item_score_line($item_id);
