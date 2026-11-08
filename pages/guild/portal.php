@@ -79,6 +79,12 @@ if ($player) {
     $print_buffer .= guild_player_header($name, $which);
 }
 
+// (the atlas is a canvas sized to its window, as a map is: framed to fit its content, the frame grew with the canvas and the canvas with the
+// frame, and the world map rescaled every 0.7 s for a while after each load, "breathing": the operator, 8 Nov)
+if ($which == 'atlas') {
+    $fixed = true;
+}
+
 if ($fixed) {
     // a map wants the whole right-hand side: the page's own width limit and padding go while it's showing
     $print_buffer .= "<style>#bg-wrapper { max-width: none !important; } #col-main-inner-3 { padding-left: 0 !important; padding-right: 0 !important; }
