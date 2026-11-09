@@ -33,6 +33,21 @@ function guild_dashboard_json($path) {
     return $raw ? json_decode($raw, true) : null;
 }
 
+// the signed-in operator? (the public pages' Google sign-in: guild-auth, oauth2-proxy, asked with this visitor's own cookie; 202 signed in).
+// For what only the operator sees, such as the Visitors menu entry. Off the public site (no cookie, no sign-in) it is false.
+function guild_is_operator() {
+    static $yes = null;
+    if ($yes !== null) return $yes;
+    $cookie = $_SERVER['HTTP_COOKIE'] ?? '';
+    if (strpos($cookie, '_guild_auth') === false) return $yes = false;
+    $base = getenv('GUILD_AUTH_URL') ?: 'http://guild-auth:4180';
+    $ctx = stream_context_create(array('http' => array('timeout' => 2, 'ignore_errors' => true,
+        'header' => "Cookie: $cookie\r\nX-Forwarded-Proto: https\r\nX-Forwarded-Host: " . ($_SERVER['HTTP_HOST'] ?? '') . "\r\n")));
+    @file_get_contents($base . '/oauth2/auth', false, $ctx);
+    $status = isset($http_response_header[0]) ? intval(explode(' ', $http_response_header[0])[1] ?? 0) : 0;
+    return $yes = ($status === 202);
+}
+
 // a character's map viewer (the runner's, one port a character), as the guild dashboard's Map button has it:
 // through the public proxy /map/<port>/, else that port on the runner's machine (the dashboard's VIEWER_HOST,
 // or this host). Only this server's guild has one; others get "".
