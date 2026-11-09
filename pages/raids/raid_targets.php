@@ -70,6 +70,16 @@ foreach ($tiers as $tier => $rows) {
             $name .= " <span class='rt-badge'>Next</span>";
         }
         $note  = $t['note'] ? "<div class='rt-sub'>" . rt_esc($t['note']) . "</div>" : "";
+        // readiness (the dashboard's general/readiness.py, for the targets with requirements): the verdict, and each group on hover
+        if (!empty($t['readiness'])) {
+            $rd = $t['readiness'];
+            $tip = [];
+            foreach ($rd['groups'] as $g) {
+                $tip[] = $g['leader'] . " (L" . $g['level'] . " " . $g['class'] . "): " . $g['state'] . ($g['why'] ? " - " . implode("; ", $g['why']) : "");
+            }
+            $note .= "<div class='rt-sub " . ($rd['ready'] ? "rt-ready" : "rt-notready") . "' title='" . rt_esc(implode("\n", $tip)) . "'>"
+                . ($rd['ready'] ? "Ready" : "Not ready") . ": " . rt_esc(preg_replace('/^(not )?ready: /', '', $rd['summary'])) . "</div>";
+        }
         $lv    = $t['levels'] ? ($t['levels'][0] == $t['levels'][1] ? $t['levels'][0] : $t['levels'][0] . "–" . $t['levels'][1]) : "?";
         if (!$t['known']) {
             $status = "<span class='rt-down'>not on this server</span>";
@@ -127,6 +137,8 @@ $print_buffer .= "<style>
   .rt-tier-name { font: 600 17px Cinzel, Georgia, serif; color: var(--gold-2); }
   .rt-count, .rt-sub, .rt-down { color: var(--muted); font-size: 12px; }
   .rt-up { color: var(--good); font-weight: 600; }
+  .rt-ready { color: var(--good); }
+  .rt-notready { color: var(--gold-2); }
   .rt-badge { font: 600 11px Inter, sans-serif; color: var(--bg); background: var(--gold); border-radius: 999px; padding: 1px 8px; }
   .rt-table { margin-top: 10px; }
   .rt-table td { vertical-align: top; padding: 6px 8px; }
