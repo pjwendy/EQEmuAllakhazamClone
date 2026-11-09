@@ -352,16 +352,22 @@ function guild_npc_recordings_section($npc_id) {
     if (!$recs) {
         return $html . "<p>No recording of it yet (a named kill, an upgrade it drops or a death it causes keeps one).</p>";
     }
-    $kinds = array('named' => 'Killed', 'upgrade' => 'Upgrade drop', 'death' => 'Killed one of ours', 'close call' => 'Close call', 'manual' => 'Recorded');
+    $kinds = array('raid' => 'Raid fight', 'named' => 'Killed', 'upgrade' => 'Upgrade drop', 'death' => 'Killed one of ours', 'close call' => 'Close call', 'manual' => 'Recorded');
     $html .= "<table class='datatable'><tr><th>When</th><th>What</th><th>Group</th><th></th></tr>";
     $tz = new DateTimeZone(getenv('GUILD_TZ') ?: 'Europe/Stockholm');  // (the container's clock is UTC; the guild's is Sweden's)
     foreach (array_slice($recs, 0, 50) as $r) {
         $when = (new DateTime('@' . intval($r['started'])))->setTimezone($tz)->format('D j M H:i');
         $html .= "<tr><td style='white-space:nowrap'>" . $when . "</td><td><b>"
             . htmlspecialchars($kinds[$r['kind']] ?? $r['kind']) . "</b> &middot; " . htmlspecialchars($r['title']) . "</td><td>" . guild_profile_link($r['leader'])
-            . "</td><td><a href='?a=portal&amp;page=player&amp;id=" . intval($r['id']) . "'>Watch</a></td></tr>";
+            . "</td><td style='white-space:nowrap'><span class='gp-pin' data-rid='" . intval($r['id']) . "' data-keep='" . (empty($r['keep']) ? 0 : 1)
+            . "'></span> <a href='?a=portal&amp;page=player&amp;id=" . intval($r['id']) . "'>Watch</a></td></tr>";
     }
-    return $html . "</table>" . (count($recs) > 50 ? "<p class='gp-muted'>The newest 50 of " . count($recs) . ".</p>" : "");
+    // the keep pins (the operator, 9 Nov: "add the pin everywhere a recording is listed"): the dashboard's links.js draws and works them, on
+    // the public site (the same address as the dashboard; the signed-in operator); where /links.js isn't there (the Codex's own port) none show
+    $pins = "<script src='/links.js'></script><script>(function () { if (typeof GL === 'undefined') return;"
+          . " document.querySelectorAll('span.gp-pin').forEach(function (s) { s.innerHTML = GL.pin({id: +s.dataset.rid, keep: s.dataset.keep === '1'}); });"
+          . " GL.wirePins(document); })();</script>";
+    return $html . "</table>" . (count($recs) > 50 ? "<p class='gp-muted'>The newest 50 of " . count($recs) . ".</p>" : "") . $pins;
 }
 
 // a key's doors: where it opens a locked door (peq.doors keyitem), in the zones players can reach; for the item's page (the operator, 8 Nov:
