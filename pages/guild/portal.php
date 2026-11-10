@@ -12,6 +12,7 @@ $portal = array(
     'upgrades' => array("Upgrades", "/upgrades"),
     'named'    => array("Named", "/named"),
     'roles'    => array("Roles", "/roles"),
+    'targets'  => array("Raid Targets", "/targets"),
     'releases' => array("Releases", "/releases"),
     'incidents' => array("Incidents", "/incidents"),
     'backlog' => array("Backlog", "/backlog"),
