@@ -41,8 +41,6 @@ if ($route == "spells") {
     require_once('pages/guild/characters.php');
 } else if ($route == "guilds") {
     require_once('pages/guild/guilds.php');
-} else if ($route == "raid_targets") {
-    require_once('pages/raids/raid_targets.php');
 } else if ($route == "npc") {
     require_once('pages/npcs/npc.php');
 } else if ($route == "recipe") {
