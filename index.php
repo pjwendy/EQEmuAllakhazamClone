@@ -158,6 +158,8 @@
                                                 <td  class="menu_item">
                                                     <li><a href="?a=portal&page=incidents">Incidents</a> </li>
                                                     <li><a href="?a=portal&page=backlog">Backlog</a> </li>
+                                                    <li><a href="http://eq3.tail178f2a.ts.net:3100/d/eq-servers" target="_blank" rel="noopener" title="Grafana: the three servers' machines, containers, services, cron jobs, backups, UPS (on the tailnet)">Servers (Grafana)</a> </li>
+                                                    <li><a href="http://eq3.tail178f2a.ts.net:3100/d/eq-guild" target="_blank" rel="noopener" title="Grafana: the three guilds side by side and each leader (on the tailnet)">Guilds (Grafana)</a> </li>
                                                 </td>
                                             </tr>
                                             <tr>
