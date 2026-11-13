@@ -149,6 +149,7 @@
                                                     <?php if (guild_is_operator()) echo '<li><a href="?a=portal&page=visitors">Visitors</a> </li>'; /* (the signed-in operator only) */ ?>
                                                     <li><a href="?a=portal&page=named">Named</a> </li>
                                                     <li><a href="?a=portal&page=targets">Raid Targets</a> </li>
+                                                    <li><a href="?a=portal&page=raid">Live Raid</a> </li>
                                                 </td>
                                             </tr>
                                             <tr>
